@@ -1,9 +1,8 @@
-
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class UsersService {
-  private users: { userId: number; username: string; password: string; }[];
+  private users: { userId: number; username: string; password: string }[];
   constructor() {
     this.users = [
       {
@@ -20,6 +19,6 @@ export class UsersService {
   }
 
   async findOne(username) {
-    return this.users.find(user => user.username === username);
+    return this.users.find((user) => user.username === username);
   }
 }

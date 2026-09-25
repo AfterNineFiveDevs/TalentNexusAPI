@@ -1,98 +1,106 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Talent Nexus API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+NestJS 12 REST API for Talent Nexus. It uses shared Zod contracts from
+`@talent-nexus/contracts`, Prisma 8 for PostgreSQL access, URI API versioning,
+and a consistent response envelope.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Requirements
 
-## Description
+- Node.js 24.15 or newer
+- PostgreSQL 15 or newer
+- npm 11 or newer
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Project setup
+## Local setup
 
 ```bash
-$ npm install
+cp .env.example .env
+npm install
+npm run start:dev
 ```
 
-## Compile and run the project
+The API listens on `http://localhost:8000` by default. API routes are prefixed
+with `/api/v1`; Swagger is available at `/api` outside production.
+
+## Configuration
+
+Configuration is validated during application startup. The process refuses to
+start if required values are absent or unsafe for the selected environment.
+
+| Variable | Required | Description |
+| --- | --- | --- |
+| `ENVIRONMENT` | No | `development`, `test`, `staging`, or `production`; defaults to `development`. |
+| `PORT` | No | HTTP port from 1 to 65535; defaults to `8000`. |
+| `DATABASE_URL` | Yes | PostgreSQL connection URL. |
+| `JWT_SECRET` | Yes | Signing secret. Staging and production require at least 32 characters. |
+| `CORS_ORIGIN` | Staging/production | Comma-separated browser origins allowed to call the API. |
+| `LOG_LEVEL` | No | One of `fatal`, `error`, `warn`, `log`, `debug`, or `verbose`. |
+
+Never commit `.env` files or production secrets. Use your platform's secret
+manager for staging and production.
+
+## HTTP security
+
+Nest's native `useSecurityHeaders()` is enabled before application middleware.
+It applies Helmet-compatible security headers and removes `X-Powered-By`.
+Production keeps HSTS and CSP's HTTPS-upgrade directive enabled. Development
+and staging omit those HTTPS-enforcement directives so local and non-TLS
+environments remain usable.
+
+CORS is intentionally open in development. In staging and production it is
+fail-closed: `CORS_ORIGIN` must contain the allowed origins before the service
+starts.
+
+## Health probes
+
+Both endpoints are public and versioned:
+
+- `GET /api/v1/health/live` — process liveness; use this for restart checks.
+- `GET /api/v1/health/ready` — verifies that the shared Prisma database client
+  can connect; use this before routing traffic to an instance.
+
+The readiness endpoint performs a lightweight query against the `User` table
+and returns HTTP 503 when the database or expected schema is unavailable. In
+development and test it includes the normalized database failure under
+`errors.database` while retaining the stable `Service not ready` message.
+Staging and production log that diagnostic but return a generic response to
+avoid exposing infrastructure details.
+
+## Observability
+
+- Staging and production logs are structured JSON through Nest's
+  `ConsoleLogger`.
+- Every HTTP response has an `X-Request-Id`. An incoming valid UUID is reused;
+  otherwise the API generates one.
+- Request completion and failure logs include request ID, method, route/status,
+  and duration. Credentials and request bodies are never logged.
+
+Export logs to your central logging provider and create alerts for readiness
+failures, elevated 5xx rates, authentication failures, and sustained latency.
+
+## Commands
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm run start:dev   # development server
+npm run build       # production build
+npm test            # unit tests
+npm run test:e2e    # end-to-end tests
+npm run test:cov    # coverage report
+npm run lint        # lint with automatic fixes
+npm run contract:emit # regenerate Prisma contract artifacts
 ```
 
-## Run tests
+## Database workflow
 
-```bash
-# unit tests
-$ npm run test
+The Prisma 8 contract is at `src/prisma/contract.prisma`. Regenerate contract
+artifacts after changing it, review migrations before applying them, and run
+migrations through the deployment pipeline—not from application startup.
+The shared database client is closed during graceful application shutdown.
 
-# e2e tests
-$ npm run test:e2e
+## Deployment checklist
 
-# test coverage
-$ npm run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+1. Provide validated environment variables through the deployment platform.
+2. Run the reviewed database migration as a separate deployment step.
+3. Build with `npm run build` and run as a non-root process.
+4. Configure the platform's liveness probe for `/api/v1/health/live` and its
+   readiness probe for `/api/v1/health/ready`.
+5. Terminate TLS at the edge and route only healthy instances to traffic.

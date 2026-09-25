@@ -1,27 +1,45 @@
 {
-   "sqltools.connections": [
-      {
-         "mysqlOptions": {
-            "authProtocol": "default",
-            "enableSsl": "Disabled"
-         },
-         "previewLimit": 50,
-         "server": "localhost",
-         "port": 3306,
-         "driver": "MySQL",
-         "name": "Store",
-         "database": "Test",
-         "username": "root"
+  "sqltools.connections": [
+    {
+      "mysqlOptions": {
+        "authProtocol": "default",
+        "enableSsl": "Disabled"
       },
-      {
-         "ssh": "Disabled",
-         "previewLimit": 50,
-         "server": "localhost",
-         "port": 5432,
-         "driver": "PostgreSQL",
-         "name": "dev",
-         "database": "talentnexus",
-         "username": "myuser"
-      }
-   ]
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 3306,
+      "driver": "MySQL",
+      "name": "Store",
+      "database": "Test",
+      "username": "root"
+    },
+    {
+      "ssh": "Disabled",
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "dev",
+      "database": "talentnexus",
+      "username": "myuser"
+    }
+  ],
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "prettier.requireConfig": false,
+  "prettier.singleQuote": true,
+  "prettier.tabWidth": 2,
+  "prettier.semi": true,
+  "prettier.trailingComma": "all",
+  "prettier.printWidth": 80,
+  "prettier.endOfLine": "lf"
 }
