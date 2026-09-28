@@ -32,7 +32,7 @@
     "@nestjs/swagger": "^12.0.0",
     "@nestjs/throttler": "^6.7.0",
     "@prisma/orm-postgres": "^8.0.0-rc.11",
-    "@talent-nexus/contracts": "file:../../contracts",
+    "@talent-nexus/contracts": "^1.0.2-dev.1",
     "dotenv": "^18.0.1",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
