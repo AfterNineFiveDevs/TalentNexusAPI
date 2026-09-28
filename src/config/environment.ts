@@ -21,6 +21,7 @@ const rawEnvironmentSchema = z.object({
   PORT: z.coerce.number().int().min(1).max(65_535).default(8000),
   DATABASE_URL: z.url(),
   JWT_SECRET: z.string().min(1),
+  JWT_EXPIRES_IN: z.string().trim().min(1),
   CORS_ORIGIN: z.string().optional(),
   LOG_LEVEL: z.enum(logLevels).default('log'),
 });
