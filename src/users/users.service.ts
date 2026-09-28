@@ -1,39 +1,35 @@
-import { Injectable } from '@nestjs/common';
-import { randomUUID } from 'node:crypto';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  API_ERROR_MESSAGES,
+  type SignUpRequest,
+} from '@talent-nexus/contracts';
+import { UserRepository } from './users.repository';
 
 @Injectable()
 export class UsersService {
-  private users: {
-    userId: string | number;
-    username: string;
-    password: string;
-  }[];
-  constructor() {
-    this.users = [
-      {
-        userId: 1,
-        username: 'john',
-        password: 'changeme',
-      },
-      {
-        userId: 2,
-        username: 'maria',
-        password: 'guess',
-      },
-    ];
+  constructor(private readonly userRepository: UserRepository) {}
+
+  async create(user: SignUpRequest) {
+    const existingUser = await this.userRepository.findByEmail(user.email);
+    if (existingUser) {
+      throw new BadRequestException({
+        message: API_ERROR_MESSAGES.BAD_REQUEST,
+        errors: { email: 'Email already exists' },
+      });
+    }
+
+    try {
+      return await this.userRepository.createUser(user);
+    } catch (error) {
+      throw error;
+    }
   }
 
-  async create(user: any) {
-    const newUser = {
-      userId: randomUUID(),
-      username: user.username,
-      password: user.password,
-    };
-    this.users.push(newUser);
-    return newUser;
+  async findOne(email: string) {
+    return this.userRepository.findByEmail(email);
   }
 
-  async findOne(username) {
-    return this.users.find((user) => user.username === username);
+  async findById(id: string) {
+    return this.userRepository.findById(id);
   }
 }

@@ -1,10 +1,12 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import {
-  API_ERROR_MESSAGES,
-  type LoginRequest,
+  authenticatedUserSchema,
+  type AuthenticatedUser,
   type LoginResponse,
+  type SignUpRequest,
 } from '@talent-nexus/contracts';
+import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service.js';
 
 @Injectable()
@@ -14,28 +16,37 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async validateUser(username: string, pass: string) {
-    const user = await this.usersService.findOne(username);
-    if (!user || user.password !== pass) {
+  async validateUser(
+    email: string,
+    pass: string,
+  ): Promise<AuthenticatedUser | null> {
+    const user = await this.usersService.findOne(email);
+    if (!user?.password || !(await bcrypt.compare(pass, user.password))) {
       return null;
     }
-    const { password, ...result } = user;
-    return result;
+    return authenticatedUserSchema.parse({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    });
   }
 
-  async register(dto: { username: string; password: string }) {
-    const user = await this.usersService.create(dto);
-    const { password, ...result } = user;
-    return result;
+  async register(dto: SignUpRequest) {
+    const hashPass = await bcrypt.hash(dto.password, 10);
+    const user = await this.usersService.create({ ...dto, password: hashPass });
+    return authenticatedUserSchema.parse({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    });
   }
 
-  async login({ username, password }: LoginRequest): Promise<LoginResponse> {
-    const user = await this.validateUser(username, password);
-    if (!user) {
-      throw new UnauthorizedException(API_ERROR_MESSAGES.INVALID_CREDENTIALS);
-    }
-
-    const payload = { username: user.username, sub: user.userId };
+  login(user: AuthenticatedUser): LoginResponse {
+    const payload = {
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+    };
     return {
       access_token: this.jwtService.sign(payload),
     };

@@ -18,12 +18,9 @@ import { UsersModule } from './users/users.module';
       cache: true,
       validate: validateEnvironment,
     }),
-
     AuthModule,
-
     UsersModule,
     HealthModule,
-
     ThrottlerModule.forRoot({
       throttlers: [
         {
@@ -32,19 +29,15 @@ import { UsersModule } from './users/users.module';
         },
       ],
     }),
-
-    ,
   ],
   controllers: [AppController],
   providers: [
     AppService,
-
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
     },
     PrismaLifecycleService,
-    ,
   ],
 })
 export class AppModule {}

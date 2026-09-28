@@ -1,7 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import {
+  API_ERROR_MESSAGES,
+  authenticatedUserSchema,
+  type AuthenticatedUser,
+} from '@talent-nexus/contracts';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -13,7 +18,18 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: any) {
-    return { userId: payload.sub, username: payload.username };
+  validate(payload: unknown): AuthenticatedUser {
+    const claims = payload as Record<string, unknown>;
+    const result = authenticatedUserSchema.safeParse({
+      id: claims.sub,
+      email: claims.email,
+      role: claims.role,
+    });
+
+    if (!result.success) {
+      throw new UnauthorizedException(API_ERROR_MESSAGES.JWT_INVALID);
+    }
+
+    return result.data;
   }
 }

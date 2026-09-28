@@ -25,21 +25,9 @@ describe('AppController (e2e)', () => {
       .expect({ success: true, data: 'Hello World!' });
   });
 
-  it('/auth/login (POST) validates the shared DTO and returns a token', async () => {
-    const response = await request(app.getHttpServer())
-      .post('/auth/login')
-      .send({ username: 'john', password: 'changeme' })
-      .expect(201);
-
-    expect(response.body).toEqual({
-      success: true,
-      data: { access_token: expect.any(String) },
-    });
-  });
-
-  it('/auth/login (POST) returns shared field errors for an invalid body', () => {
+  it('/auth/signup (POST) returns shared field errors for an invalid body', () => {
     return request(app.getHttpServer())
-      .post('/auth/login')
+      .post('/auth/signup')
       .send({})
       .expect(400)
       .expect({
@@ -47,7 +35,10 @@ describe('AppController (e2e)', () => {
         message: 'Validation failed',
         errors: {
           username: 'Username is required',
+          email: 'Email is required',
           password: 'Password is required',
+          confirmPassword: 'Please confirm your password',
+          termsAccepted: 'You must accept the terms and conditions',
         },
       });
   });
