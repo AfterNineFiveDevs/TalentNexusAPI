@@ -9,20 +9,28 @@ import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { UsersModule } from './users/users.module';
 
 @Module({
-  imports: [AuthModule, UsersModule,ThrottlerModule.forRoot({
+  imports: [
+    AuthModule,
+    UsersModule,
+    ThrottlerModule.forRoot({
       throttlers: [
         {
           ttl: 60000,
           limit: 10,
         },
       ],
-  }), ConfigModule.forRoot({
+    }),
+    ConfigModule.forRoot({
       isGlobal: true,
-    })],
+    }),
+  ],
   controllers: [AppController],
-  providers: [AppService, {
-    provide: APP_GUARD,
-    useClass: JwtAuthGuard,
-  }],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+  ],
 })
 export class AppModule {}
