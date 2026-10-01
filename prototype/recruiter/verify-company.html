@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Verify your company · CareerNexus prototype</title>
+<link rel="stylesheet" href="../assets/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+</head>
+<body data-shell="recruiter" data-active="company" data-root="../">
+<main class="page">
+
+<p class="note note--neutral t-meta">Phase 3, after the MVP. Shown so the candidate side is designed with it in mind.</p>
+<div class="split"><div class="stack">
+<header class="stack" style="--gap: 6px"><h1 class="t-display">Verify your company</h1><p class="t-body muted measure">Candidates see the Verified employer badge only after our team checks your evidence.</p></header>
+<ol class="steps"><li class="done"><span class="dot">✓</span>Company details</li><li aria-current="step"><span class="dot">2</span>Evidence</li><li><span class="dot">3</span>Review</li></ol>
+<div class="card"><span class="t-sub">Upload your evidence</span><span class="t-meta c-warn">[Required documents depend on the verification policy, still open in BRD §27.]</span>
+<div class="row" style="flex-wrap: nowrap; padding: 12px 14px; background: var(--background); border-radius: var(--radius)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--good)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span class="stack grow" style="--gap: 2px"><span class="t-strong">Company registration certificate</span><span class="t-meta c-good">registration_certificate.pdf · uploaded</span></span><button type="button" class="btn btn--secondary btn--sm" data-toast="Uploaded">Replace</button></div><div class="row" style="flex-wrap: nowrap; padding: 12px 14px; background: var(--background); border-radius: var(--radius)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--muted-foreground)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/></svg><span class="stack grow" style="--gap: 2px"><span class="t-strong">Letter on company letterhead</span><span class="t-meta muted">Signed by a director or HR manager</span></span><button type="button" class="btn btn--primary btn--sm" data-toast="Uploaded"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4"/><path d="m7 9 5-5 5 5"/><path d="M4 16v4h16v-4"/></svg>Upload</button></div><div class="row" style="flex-wrap: nowrap; padding: 12px 14px; background: var(--background); border-radius: var(--radius)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--good)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span class="stack grow" style="--gap: 2px"><span class="t-strong">Work email at your company domain</span><span class="t-meta c-good">hr@ayeyarhinthar.example · confirmed</span></span><button type="button" class="btn btn--secondary btn--sm" data-toast="Uploaded">Replace</button></div></div>
+<div class="row"><a class="btn btn--primary" href="../recruiter/post-job.html" >Submit for review</a><button type="button" class="btn btn--secondary" >Save and finish later</button></div></div>
+<div class="card"><span class="t-sub">What candidates will see</span><p class="t-body muted">Until review passes, your jobs show as not verified. That does not hide them.</p><div class="row"><span class="chip chip--dashed"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--neutral)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8" stroke-dasharray="3 3"/></svg>Not verified</span><span class="t-meta muted">while we review</span></div><div class="row"><span class="chip chip--good"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--good)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg>Verified employer</span><span class="t-meta muted">after review passes</span></div></div>
+</div>
+</main>
+<script src="../assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Applicants · CareerNexus prototype</title>
+<link rel="stylesheet" href="../assets/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+</head>
+<body data-shell="recruiter" data-active="applicants" data-root="../">
+<main class="page">
+
+<p class="note note--neutral t-meta">Phase 3, after the MVP. Shown so the candidate side is designed with it in mind.</p>
+<div class="split" style="grid-template-columns: minmax(0, 1fr) 420px"><div class="stack">
+<header class="stack" style="--gap: 6px"><h1 class="t-display">Senior Accountant</h1><p class="t-body muted measure">18 applicants · Posted 6 days ago · Verified employer</p></header>
+<div class="table-wrap"><table><thead><tr><th>Applicant</th><th>Match</th><th>Applied</th><th>Status</th></tr></thead><tbody><tr aria-selected="true"><td><span class="stack" style="--gap: 2px"><span class="t-strong">Thiri Aung</span><span class="t-meta muted">Senior Accountant, Golden Star Trading</span></span></td><td><span class="stack" style="--gap: 2px"><span class="t-strong">Good match</span><span class="t-meta muted">4 evidenced · 1 gap</span></span></td><td>Today</td><td><span class="chip chip--primary">New</span></td></tr><tr><td><span class="stack" style="--gap: 2px"><span class="t-strong">Kyaw Zin Htet</span><span class="t-meta muted">Accountant, Delta Foods</span></span></td><td><span class="stack" style="--gap: 2px"><span class="t-strong">Good match</span><span class="t-meta muted">3 evidenced · 1 not stated</span></span></td><td>Yesterday</td><td><span class="chip chip--good">Shortlisted</span></td></tr><tr><td><span class="stack" style="--gap: 2px"><span class="t-strong">Hnin Wai Phyo</span><span class="t-meta muted">Accounts Executive, Nyein Trading</span></span></td><td><span class="stack" style="--gap: 2px"><span class="t-strong">Partial match</span><span class="t-meta muted">2 evidenced · 2 gaps</span></span></td><td>2 days ago</td><td><span class="chip chip--primary">New</span></td></tr><tr><td><span class="stack" style="--gap: 2px"><span class="t-strong">Aung Min Oo</span><span class="t-meta muted">Finance Officer, Shwe Pyi</span></span></td><td><span class="stack" style="--gap: 2px"><span class="t-strong">Partial match</span><span class="t-meta muted">2 evidenced · 1 gap</span></span></td><td>3 days ago</td><td><span class="chip">Not progressing</span></td></tr></tbody></table></div>
+</div>
+<aside class="score-match sticky"><span class="t-title">Thiri Aung</span><span class="t-meta muted">Applied with “Accounting roles — Yangon” CV</span><span class="t-display">Good match</span>
+<ul class="evidence"><li class="ev ev--good"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--good)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><div class="ev__body"><span class="t-strong ev__title">Evidenced — experience</span><span class="t-meta muted">5 years in accounting. The ad asks for 3 or more.</span></div></li><li class="ev ev--good"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--good)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><div class="ev__body"><span class="t-strong ev__title">Evidenced — Excel</span><span class="t-meta muted">Listed in skills and in two roles.</span></div></li><li class="ev ev--gap"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/></svg><div class="ev__body"><span class="t-strong ev__title">Gap — software</span><span class="t-meta muted">The ad prefers SAP. Their profile does not list it.</span></div></li></ul>
+<p class="t-meta muted">Evidence from the candidate’s CV, not a ranking. Review each applicant yourself.</p>
+<div class="row" style="--gap: 8px"><button type="button" class="btn btn--primary btn--sm" data-toast="Shortlisted. Thiri will be told.">Shortlist</button><button type="button" class="btn btn--secondary btn--sm" data-toast="Marked not progressing">Not progressing</button></div></aside>
+</div>
+</main>
+<script src="../assets/app.js"></script>
+</body>
+</html>

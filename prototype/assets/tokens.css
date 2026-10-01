@@ -1,0 +1,56 @@
+/*
+ * CareerNexus design tokens.
+ * Values are copied from the Figma file's "CareerNexus" variable collection
+ * (color/*, space/*, radius/*, touch/min) and its type/* text styles.
+ *
+ * Naming: the first block uses shadcn/ui's CSS variable names, so this file can be
+ * pasted in as the shadcn theme when the production React + Tailwind app is built.
+ * The second block holds meanings shadcn has no slot for (evidence states).
+ */
+:root {
+  /* shadcn/ui slots -> CareerNexus values */
+  --background: #f4f6f8;            /* color/paper-2 */
+  --foreground: #141a1f;            /* color/ink */
+  --card: #ffffff;                  /* color/paper */
+  --card-foreground: #141a1f;
+  --popover: #ffffff;
+  --popover-foreground: #141a1f;
+  --primary: #1b5e8c;               /* color/accent */
+  --primary-foreground: #ffffff;
+  --secondary: #ffffff;
+  --secondary-foreground: #141a1f;
+  --muted: #edeff2;                 /* color/neutral-soft */
+  --muted-foreground: #4a5560;      /* color/ink-2 */
+  --accent: #e7f0f6;                /* shadcn "accent" = subtle hover/selected fill -> color/accent-soft */
+  --accent-foreground: #1b5e8c;
+  --destructive: #8c2f2f;           /* color/stop */
+  --destructive-foreground: #ffffff;
+  --border: #d9dfe5;                /* color/line */
+  --input: #b4bec8;                 /* color/line-2 */
+  --ring: #1b5e8c;
+  --radius: 10px;                   /* radius/md */
+
+  /* CareerNexus-only meanings */
+  --ink-3: #77828e;
+  --good: #1f6b45;  --good-soft: #e4f1ea;     /* Evidenced, verified */
+  --warn: #8a5a12;  --warn-soft: #fbf0dd;     /* Gap, please confirm */
+  --stop-soft: #f8e7e7;                       /* No longer active, errors */
+  --neutral: #5a646e; --neutral-soft: #edeff2;/* Not stated - never counted as a gap */
+  --primary-soft: #e7f0f6;
+
+  --radius-sm: 6px;
+  --radius-lg: 14px;
+  --space-4: 4px; --space-8: 8px; --space-12: 12px; --space-16: 16px;
+  --space-20: 20px; --space-24: 24px; --space-32: 32px;
+  --touch-min: 44px;
+
+  /* type/* text styles (Inter) */
+  --font-sans: Inter, "Helvetica Neue", Arial, sans-serif;
+  --text-display: 700 28px/34px var(--font-sans);
+  --text-title: 700 20px/26px var(--font-sans);
+  --text-subtitle: 600 17px/24px var(--font-sans);
+  --text-body: 400 15px/22px var(--font-sans);
+  --text-body-strong: 600 15px/22px var(--font-sans);
+  --text-meta: 500 13px/18px var(--font-sans);
+  --text-micro: 600 11px/16px var(--font-sans);
+}
