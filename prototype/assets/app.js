@@ -1,5 +1,5 @@
 /*
- * CareerNexus prototype runtime. Vanilla JS, no build step.
+ * TalentNexus prototype runtime. Vanilla JS, no build step.
  * - Injects the app shell (nav, mobile tab bar, trial banner) from <body data-shell data-active data-root>.
  * - Keeps prototype state in localStorage (fake; nothing is sent anywhere).
  * - Mirrors the real sign-up rules from TalentNexusContract/src/auth.ts (signupRequestSchema).
@@ -7,7 +7,7 @@
 (function () {
   'use strict';
 
-  var KEY = 'careernexus-prototype';
+  var KEY = 'talentnexus-prototype';
   var DEFAULTS = { signedIn: false, simDay: 0, trialStart: null, saved: ['senior-accountant', 'finance-officer'], shareOn: true };
   function load() { try { return Object.assign({}, DEFAULTS, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) { return Object.assign({}, DEFAULTS); } }
   function save(s) { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) { /* private mode: prototype still works for this page */ } }
@@ -44,9 +44,9 @@
 
   // ---------- Shell ----------
   var NAVS = {
-    candidate: { brand: 'CareerNexus', home: 'profile/profile.html', links: [['profile/profile.html', 'Profile', 'profile'], ['cv/cvs.html', 'My CVs', 'cvs'], ['jobs/job-search.html', 'Jobs', 'jobs'], ['jobs/saved-jobs.html', 'Saved', 'saved']] },
-    recruiter: { brand: 'CareerNexus for employers', home: 'recruiter/verify-company.html', links: [['recruiter/verify-company.html', 'Company', 'company'], ['recruiter/post-job.html', 'Jobs', 'rjobs'], ['recruiter/applicants.html', 'Applicants', 'applicants'], ['recruiter/find-candidates.html', 'Find candidates', 'find']] },
-    admin: { brand: 'CareerNexus admin', home: 'admin/jobs.html', dark: true, links: [['admin/jobs.html', 'Jobs', 'ajobs'], ['admin/reports.html', 'Reports', 'reports'], ['admin/verification.html', 'Verification', 'verification'], ['admin/users.html', 'Users', 'users'], ['admin/subscriptions.html', 'Subscriptions', 'subscriptions'], ['admin/analytics.html', 'Analytics', 'analytics']] }
+    candidate: { brand: 'TalentNexus', home: 'profile/profile.html', links: [['profile/profile.html', 'Profile', 'profile'], ['cv/cvs.html', 'My CVs', 'cvs'], ['jobs/job-search.html', 'Jobs', 'jobs'], ['jobs/saved-jobs.html', 'Saved', 'saved']] },
+    recruiter: { brand: 'TalentNexus for employers', home: 'recruiter/verify-company.html', links: [['recruiter/verify-company.html', 'Company', 'company'], ['recruiter/post-job.html', 'Jobs', 'rjobs'], ['recruiter/applicants.html', 'Applicants', 'applicants'], ['recruiter/find-candidates.html', 'Find candidates', 'find']] },
+    admin: { brand: 'TalentNexus admin', home: 'admin/jobs.html', dark: true, links: [['admin/jobs.html', 'Jobs', 'ajobs'], ['admin/reports.html', 'Reports', 'reports'], ['admin/verification.html', 'Verification', 'verification'], ['admin/users.html', 'Users', 'users'], ['admin/subscriptions.html', 'Subscriptions', 'subscriptions'], ['admin/analytics.html', 'Analytics', 'analytics']] }
   };
 
   function renderShell() {
@@ -54,7 +54,7 @@
     var header = document.createElement('header');
     if (shell === 'public') {
       header.className = 'topnav';
-      header.innerHTML = '<a class="brand" href="' + root + 'public/landing.html">' + icon('logo', 22, 'var(--primary)') + 'CareerNexus</a>' +
+      header.innerHTML = '<a class="brand" href="' + root + 'public/landing.html">' + icon('logo', 22, 'var(--primary)') + 'TalentNexus</a>' +
         '<div class="row" style="margin-left: auto; --gap: 8px"><a class="btn btn--ghost" href="' + root + 'public/sign-in.html">Sign in</a>' +
         '<a class="btn btn--primary btn--sm hide-mobile" href="' + root + 'public/sign-up.html">Create free account</a></div>';
       body.prepend(header);

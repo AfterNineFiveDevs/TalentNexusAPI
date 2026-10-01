@@ -1,6 +1,6 @@
 /*
- * CareerNexus design tokens.
- * Values are copied from the Figma file's "CareerNexus" variable collection
+ * TalentNexus design tokens.
+ * Values are copied from the Figma file's "TalentNexus" variable collection
  * (color/*, space/*, radius/*, touch/min) and its type/* text styles.
  *
  * Naming: the first block uses shadcn/ui's CSS variable names, so this file can be
@@ -8,7 +8,7 @@
  * The second block holds meanings shadcn has no slot for (evidence states).
  */
 :root {
-  /* shadcn/ui slots -> CareerNexus values */
+  /* shadcn/ui slots -> TalentNexus values */
   --background: #f4f6f8;            /* color/paper-2 */
   --foreground: #141a1f;            /* color/ink */
   --card: #ffffff;                  /* color/paper */
@@ -30,7 +30,7 @@
   --ring: #1b5e8c;
   --radius: 10px;                   /* radius/md */
 
-  /* CareerNexus-only meanings */
+  /* TalentNexus-only meanings */
   --ink-3: #77828e;
   --good: #1f6b45;  --good-soft: #e4f1ea;     /* Evidenced, verified */
   --warn: #8a5a12;  --warn-soft: #fbf0dd;     /* Gap, please confirm */

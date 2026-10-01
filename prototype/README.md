@@ -1,6 +1,6 @@
-# CareerNexus HTML prototype
+# TalentNexus HTML prototype
 
-A clickable prototype of every CareerNexus flow, from the first visit to production states, for web and mobile.
+A clickable prototype of every TalentNexus flow, from the first visit to production states, for web and mobile.
 It is plain HTML, CSS and a little JavaScript. There is no build step and nothing to install.
 
 It is **not** part of the API. `nest build` only compiles `src/`, so this folder never ships.
@@ -40,7 +40,7 @@ The screens are responsive, so on a phone you can open any of them directly.
   `TalentNexusContract/src/auth.ts` (`signupRequestSchema`). Roles match `src/enum.ts`
   (Admin, Talent, Recruiter).
 - **Fake:** nothing calls the API. State such as saved jobs, the trial, and whether the share link is on
-  lives in your browser's `localStorage` under `careernexus-prototype`.
+  lives in your browser's `localStorage` under `talentnexus-prototype`.
 - **Prototype panel** (bottom left): simulate trial day 0, 5 or 8, reset everything, or jump back to the flow map.
 - **Placeholders** in `[square brackets]` are decisions the BRD leaves open (§27): price, billing terms,
   verification evidence, LinkedIn import route, KPI targets.
@@ -51,7 +51,7 @@ The screens are responsive, so on a phone you can open any of them directly.
 **shadcn/ui variable names**, so when the production React and Tailwind app is built you can install shadcn
 and paste this block in as the theme:
 
-| shadcn variable | CareerNexus token | Value |
+| shadcn variable | TalentNexus token | Value |
 | --- | --- | --- |
 | `--background` | color/paper-2 | `#f4f6f8` |
 | `--foreground` | color/ink | `#141a1f` |
@@ -66,7 +66,7 @@ and paste this block in as the theme:
 | `--ring` | color/accent | `#1b5e8c` |
 | `--radius` | radius/md | `10px` |
 
-shadcn has no slot for CareerNexus's evidence states, so these stay as our own variables:
+shadcn has no slot for TalentNexus's evidence states, so these stay as our own variables:
 `--good`, `--warn`, `--neutral` (for "not stated in this ad") and their `-soft` versions.
 
 ## Rules the screens follow
