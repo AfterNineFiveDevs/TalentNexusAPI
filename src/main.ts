@@ -2,6 +2,7 @@ import { ConsoleLogger, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ModulesContainer, NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 import { configureApiResponseHandling } from './common/http/configure-api-response-handling';
 import { requestContextMiddleware } from './common/observability/request-context.middleware';
@@ -52,6 +53,7 @@ async function bootstrap() {
         },
   );
   app.use(requestContextMiddleware);
+  app.use(cookieParser());
   configureApiResponseHandling(app);
   app.setGlobalPrefix('api');
   app.enableShutdownHooks();
@@ -61,7 +63,7 @@ async function bootstrap() {
   });
 
   if (environment === 'development' || environment === 'test') {
-    app.enableCors();
+    app.enableCors({ origin: true, credentials: true });
   } else {
     const origins = config
       .getOrThrow<string>('CORS_ORIGIN', { infer: true })
@@ -73,17 +75,22 @@ async function bootstrap() {
       throw new Error('CORS_ORIGIN must be set outside development');
     }
 
-    app.enableCors({ origin: origins });
+    app.enableCors({ origin: origins, credentials: true });
   }
 
   if (environment !== 'production') {
-    const config = new DocumentBuilder()
+    const swaggerConfig = new DocumentBuilder()
       .setTitle('Talent Nexus API')
       .setDescription('Talent Nexus API description')
       .setVersion('1.0')
       .addBearerAuth()
+      .addCookieAuth(
+        config.getOrThrow('REFRESH_TOKEN_COOKIE_NAME', { infer: true }),
+        { type: 'apiKey', in: 'cookie' },
+        'refresh',
+      )
       .build();
-    const document = SwaggerModule.createDocument(app, config);
+    const document = SwaggerModule.createDocument(app, swaggerConfig);
     applyZodSchemasToSwagger(document, app.get(ModulesContainer));
     const documentFactory = () => document;
     SwaggerModule.setup('api', app, documentFactory);

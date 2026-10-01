@@ -1,0 +1,368 @@
+[
+  {
+    "id": "dropColumn.user.resetPasswordToken",
+    "label": "Drop column \"resetPasswordToken\" from \"user\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "resetPasswordToken",
+        "table": "user"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"resetPasswordToken\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "user",
+          "resetPasswordToken"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop column \"resetPasswordToken\"",
+        "sql": "ALTER TABLE \"public\".\"user\" DROP COLUMN \"resetPasswordToken\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"resetPasswordToken\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "user",
+          "resetPasswordToken"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropColumn.user.resetPasswordTokenExpiry",
+    "label": "Drop column \"resetPasswordTokenExpiry\" from \"user\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "resetPasswordTokenExpiry",
+        "table": "user"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"resetPasswordTokenExpiry\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "user",
+          "resetPasswordTokenExpiry"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop column \"resetPasswordTokenExpiry\"",
+        "sql": "ALTER TABLE \"public\".\"user\" DROP COLUMN \"resetPasswordTokenExpiry\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"resetPasswordTokenExpiry\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "user",
+          "resetPasswordTokenExpiry"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropColumn.user.verificationToken",
+    "label": "Drop column \"verificationToken\" from \"user\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "verificationToken",
+        "table": "user"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"verificationToken\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "user",
+          "verificationToken"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop column \"verificationToken\"",
+        "sql": "ALTER TABLE \"public\".\"user\" DROP COLUMN \"verificationToken\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"verificationToken\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "user",
+          "verificationToken"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.authActionToken",
+    "label": "Create table \"authActionToken\"",
+    "summary": "Creates table \"authActionToken\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "authActionToken"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"authActionToken\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"authActionToken\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"authActionToken\"",
+        "sql": "CREATE TABLE \"public\".\"authActionToken\" (\n  \"consumedAt\" timestamptz,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"expiresAt\" timestamptz NOT NULL,\n  \"id\" uuid NOT NULL,\n  \"purpose\" text NOT NULL,\n  \"tokenHash\" text NOT NULL,\n  \"userId\" uuid NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"authActionToken_purpose_check_325330e4\" CHECK (\"purpose\" IN ('EMAIL_VERIFICATION', 'PASSWORD_RESET'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"authActionToken\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"authActionToken\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.authActionToken.authActionToken_tokenHash_key",
+    "label": "Add unique constraint on \"authActionToken\" (tokenHash)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "authActionToken_tokenHash_key",
+        "table": "authActionToken"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"authActionToken_tokenHash_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "authActionToken_tokenHash_key",
+          "public",
+          "\"public\".\"authActionToken\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"authActionToken_tokenHash_key\"",
+        "sql": "ALTER TABLE \"public\".\"authActionToken\" ADD CONSTRAINT \"authActionToken_tokenHash_key\" UNIQUE (\"tokenHash\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"authActionToken_tokenHash_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "authActionToken_tokenHash_key",
+          "public",
+          "\"public\".\"authActionToken\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.authActionToken.authActionToken_expiresAt_idx_6b6b8c10",
+    "label": "Create index \"authActionToken_expiresAt_idx_6b6b8c10\" on \"authActionToken\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "authActionToken_expiresAt_idx_6b6b8c10",
+        "table": "authActionToken"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"authActionToken_expiresAt_idx_6b6b8c10\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"authActionToken_expiresAt_idx_6b6b8c10\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"authActionToken_expiresAt_idx_6b6b8c10\"",
+        "sql": "CREATE INDEX \"authActionToken_expiresAt_idx_6b6b8c10\" ON \"public\".\"authActionToken\" (\"expiresAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"authActionToken_expiresAt_idx_6b6b8c10\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"authActionToken_expiresAt_idx_6b6b8c10\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.authActionToken.authActionToken_userId_idx_a489d58a",
+    "label": "Create index \"authActionToken_userId_idx_a489d58a\" on \"authActionToken\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "authActionToken_userId_idx_a489d58a",
+        "table": "authActionToken"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"authActionToken_userId_idx_a489d58a\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"authActionToken_userId_idx_a489d58a\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"authActionToken_userId_idx_a489d58a\"",
+        "sql": "CREATE INDEX \"authActionToken_userId_idx_a489d58a\" ON \"public\".\"authActionToken\" (\"userId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"authActionToken_userId_idx_a489d58a\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"authActionToken_userId_idx_a489d58a\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.authActionToken.authActionToken_userId_purpose_idx_e49c32f0",
+    "label": "Create index \"authActionToken_userId_purpose_idx_e49c32f0\" on \"authActionToken\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "authActionToken_userId_purpose_idx_e49c32f0",
+        "table": "authActionToken"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"authActionToken_userId_purpose_idx_e49c32f0\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"authActionToken_userId_purpose_idx_e49c32f0\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"authActionToken_userId_purpose_idx_e49c32f0\"",
+        "sql": "CREATE INDEX \"authActionToken_userId_purpose_idx_e49c32f0\" ON \"public\".\"authActionToken\" (\"userId\", \"purpose\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"authActionToken_userId_purpose_idx_e49c32f0\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"authActionToken_userId_purpose_idx_e49c32f0\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.authActionToken.auth_action_token_user_id_fkey",
+    "label": "Add foreign key \"auth_action_token_user_id_fkey\" on \"authActionToken\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "auth_action_token_user_id_fkey",
+        "table": "authActionToken"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"auth_action_token_user_id_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "auth_action_token_user_id_fkey",
+          "public",
+          "\"public\".\"authActionToken\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"auth_action_token_user_id_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"authActionToken\"\nADD CONSTRAINT \"auth_action_token_user_id_fkey\"\nFOREIGN KEY (\"userId\")\nREFERENCES \"public\".\"user\" (\"id\")\nON DELETE CASCADE\nON UPDATE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"auth_action_token_user_id_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "auth_action_token_user_id_fkey",
+          "public",
+          "\"public\".\"authActionToken\""
+        ]
+      }
+    ]
+  }
+]

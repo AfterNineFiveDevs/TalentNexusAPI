@@ -1,19 +1,6 @@
 {
   "sqltools.connections": [
     {
-      "mysqlOptions": {
-        "authProtocol": "default",
-        "enableSsl": "Disabled"
-      },
-      "previewLimit": 50,
-      "server": "localhost",
-      "port": 3306,
-      "driver": "MySQL",
-      "name": "Store",
-      "database": "Test",
-      "username": "root"
-    },
-    {
       "ssh": "Disabled",
       "previewLimit": 50,
       "server": "localhost",
@@ -21,7 +8,8 @@
       "driver": "PostgreSQL",
       "name": "dev",
       "database": "talentnexus",
-      "username": "myuser"
+      "username": "myuser",
+      "password": "mysecretpassword"
     }
   ],
   "editor.formatOnSave": true,
