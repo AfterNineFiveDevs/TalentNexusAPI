@@ -14,6 +14,7 @@ import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 import {
   type AuthenticatedUser,
   ForgotPasswordRequestDto,
+  GoogleAuthRequestDto,
   LoginRequestDto,
   RefreshResponseDto,
   ResendVerificationRequestDto,
@@ -97,6 +98,21 @@ export class AuthController {
   ) {
     void credentials;
     const session = await this.authService.login(user);
+    this.refreshTokenCookie.write(response, session.refreshToken);
+    return session.response;
+  }
+
+  @Public()
+  @UseGuards(CookieOriginGuard, ThrottlerGuard)
+  @Throttle({ default: { limit: 10, ttl: 900_000 } })
+  @HttpCode(HttpStatus.OK)
+  @Post('google')
+  @ApiBody({ type: GoogleAuthRequestDto })
+  async google(
+    @Body() dto: GoogleAuthRequestDto,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const session = await this.authService.loginWithGoogle(dto);
     this.refreshTokenCookie.write(response, session.refreshToken);
     return session.response;
   }

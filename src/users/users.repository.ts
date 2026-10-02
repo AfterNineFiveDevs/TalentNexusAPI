@@ -21,17 +21,12 @@ export class UserRepository {
     return await this.prisma.User.where((u) => u.id.eq(id)).first();
   }
 
-  async createUser({
-    username,
-    email,
-    password,
-    termsAccepted,
-  }: SignUpRequest) {
+  async createUser({ username, email, password }: SignUpRequest) {
     return this.prisma.User.create({
       name: username,
       email,
       password,
-      termAccepted: termsAccepted,
+      termAccepted: true,
       role: Role.Talent,
       signUpMethod: SignUpMethod.Email,
     });

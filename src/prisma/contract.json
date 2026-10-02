@@ -8,6 +8,10 @@
       "model": "AuthActionToken",
       "namespace": "public"
     },
+    "authIdentity": {
+      "model": "AuthIdentity",
+      "namespace": "public"
+    },
     "authSession": {
       "model": "AuthSession",
       "namespace": "public"
@@ -39,6 +43,15 @@
               {
                 "name": "PASSWORD_RESET",
                 "value": "PASSWORD_RESET"
+              }
+            ]
+          },
+          "AuthProvider": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "GOOGLE",
+                "value": "GOOGLE"
               }
             ]
           },
@@ -197,6 +210,100 @@
               },
               "namespaceId": "public",
               "table": "authActionToken"
+            }
+          },
+          "AuthIdentity": {
+            "fields": {
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              },
+              "provider": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "AuthProvider",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "providerSubject": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "userId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "user": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "userId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "provider": {
+                  "column": "provider"
+                },
+                "providerSubject": {
+                  "column": "providerSubject"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                },
+                "userId": {
+                  "column": "userId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "authIdentity"
             }
           },
           "AuthSession": {
@@ -600,6 +707,21 @@
                   "namespace": "public"
                 }
               },
+              "authIdentities": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "userId"
+                  ]
+                },
+                "to": {
+                  "model": "AuthIdentity",
+                  "namespace": "public"
+                }
+              },
               "authSessions": {
                 "cardinality": "1:N",
                 "on": {
@@ -790,6 +912,107 @@
                 {
                   "columns": [
                     "tokenHash"
+                  ]
+                }
+              ]
+            },
+            "authIdentity": {
+              "checks": [
+                {
+                  "expression": "\"provider\" IN ('GOOGLE')",
+                  "name": "authIdentity_provider_check_ced8a431",
+                  "prefix": "authIdentity_provider_check"
+                }
+              ],
+              "columns": {
+                "createdAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": false
+                },
+                "provider": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "AuthProvider",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "providerSubject": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "userId": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "name": "auth_identity_user_id_fkey",
+                  "onDelete": "cascade",
+                  "onUpdate": "cascade",
+                  "source": {
+                    "columns": [
+                      "userId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "authIdentity"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "user"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "userId"
+                  ],
+                  "name": "authIdentity_userId_idx_a489d58a",
+                  "prefix": "authIdentity_userId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "provider",
+                    "providerSubject"
+                  ]
+                },
+                {
+                  "columns": [
+                    "userId",
+                    "provider"
                   ]
                 }
               ]
@@ -1175,6 +1398,12 @@
                 "PASSWORD_RESET"
               ]
             },
+            "AuthProvider": {
+              "kind": "valueSet",
+              "values": [
+                "GOOGLE"
+              ]
+            },
             "Role": {
               "kind": "valueSet",
               "values": [
@@ -1205,10 +1434,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "df4860660af55be2b957682ec6522e5d82ef668ec2b3ebf3ac1cd561f1ca7cc2"
+    "storageHash": "01efed2bcc43ce716f0c8be6301e57ad3efafb638a4fead5d5df639f86a6c2fd"
   },
   "execution": {
-    "executionHash": "e431c9a0432d2c8867d629e914b031d2454d68e1a8d801c1e656fa137b2bb056",
+    "executionHash": "8384731f28805a9c8f3682ae2e364976a805dbfb9ea3dd4c0234412821b4da16",
     "mutations": {
       "defaults": [
         {
@@ -1220,6 +1449,32 @@
             "column": "id",
             "namespace": "public",
             "table": "authActionToken"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "id",
+            "namespace": "public",
+            "table": "authIdentity"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "timestampNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "timestampNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "updatedAt",
+            "namespace": "public",
+            "table": "authIdentity"
           }
         },
         {

@@ -1,0 +1,206 @@
+[
+  {
+    "id": "table.authIdentity",
+    "label": "Create table \"authIdentity\"",
+    "summary": "Creates table \"authIdentity\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "authIdentity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"authIdentity\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"authIdentity\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"authIdentity\"",
+        "sql": "CREATE TABLE \"public\".\"authIdentity\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" uuid NOT NULL,\n  \"provider\" text NOT NULL,\n  \"providerSubject\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  \"userId\" uuid NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"authIdentity_provider_check_ced8a431\" CHECK (\"provider\" IN ('GOOGLE'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"authIdentity\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"authIdentity\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.authIdentity.authIdentity_provider_providerSubject_key",
+    "label": "Add unique constraint on \"authIdentity\" (provider, providerSubject)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "authIdentity_provider_providerSubject_key",
+        "table": "authIdentity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"authIdentity_provider_providerSubject_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "authIdentity_provider_providerSubject_key",
+          "public",
+          "\"public\".\"authIdentity\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"authIdentity_provider_providerSubject_key\"",
+        "sql": "ALTER TABLE \"public\".\"authIdentity\" ADD CONSTRAINT \"authIdentity_provider_providerSubject_key\" UNIQUE (\"provider\", \"providerSubject\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"authIdentity_provider_providerSubject_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "authIdentity_provider_providerSubject_key",
+          "public",
+          "\"public\".\"authIdentity\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.authIdentity.authIdentity_userId_provider_key",
+    "label": "Add unique constraint on \"authIdentity\" (userId, provider)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "authIdentity_userId_provider_key",
+        "table": "authIdentity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"authIdentity_userId_provider_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "authIdentity_userId_provider_key",
+          "public",
+          "\"public\".\"authIdentity\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"authIdentity_userId_provider_key\"",
+        "sql": "ALTER TABLE \"public\".\"authIdentity\" ADD CONSTRAINT \"authIdentity_userId_provider_key\" UNIQUE (\"userId\", \"provider\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"authIdentity_userId_provider_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "authIdentity_userId_provider_key",
+          "public",
+          "\"public\".\"authIdentity\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.authIdentity.authIdentity_userId_idx_a489d58a",
+    "label": "Create index \"authIdentity_userId_idx_a489d58a\" on \"authIdentity\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "authIdentity_userId_idx_a489d58a",
+        "table": "authIdentity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"authIdentity_userId_idx_a489d58a\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"authIdentity_userId_idx_a489d58a\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"authIdentity_userId_idx_a489d58a\"",
+        "sql": "CREATE INDEX \"authIdentity_userId_idx_a489d58a\" ON \"public\".\"authIdentity\" (\"userId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"authIdentity_userId_idx_a489d58a\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"authIdentity_userId_idx_a489d58a\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.authIdentity.auth_identity_user_id_fkey",
+    "label": "Add foreign key \"auth_identity_user_id_fkey\" on \"authIdentity\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "auth_identity_user_id_fkey",
+        "table": "authIdentity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"auth_identity_user_id_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "auth_identity_user_id_fkey",
+          "public",
+          "\"public\".\"authIdentity\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"auth_identity_user_id_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"authIdentity\"\nADD CONSTRAINT \"auth_identity_user_id_fkey\"\nFOREIGN KEY (\"userId\")\nREFERENCES \"public\".\"user\" (\"id\")\nON DELETE CASCADE\nON UPDATE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"auth_identity_user_id_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "auth_identity_user_id_fkey",
+          "public",
+          "\"public\".\"authIdentity\""
+        ]
+      }
+    ]
+  }
+]

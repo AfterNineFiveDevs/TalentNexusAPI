@@ -79,6 +79,20 @@ Staging and production accept browser cookie requests only from origins in
 `CORS_ORIGIN`; clients without an `Origin` header remain supported for native
 mobile cookie jars.
 
+## Google authentication
+
+`POST /api/v1/auth/google` accepts a Google Identity Services ID token as
+`{ "credential": "..." }`. The API verifies its
+signature, issuer, expiry, verified email, and audience before linking or
+creating a local account and issuing the normal Talent Nexus access and refresh
+tokens. When no account exists, the Google login creates one automatically;
+the signup-capable action records terms acceptance on the new account.
+
+Set `GOOGLE_CLIENT_IDS` to a comma-separated allowlist of OAuth client IDs. The
+web application uses its public client ID in `NEXT_PUBLIC_GOOGLE_CLIENT_ID`.
+This authentication-only flow does not use or store a Google client secret,
+Google access token, or Google refresh token.
+
 ## Email verification and password recovery
 
 The API supports these public, rate-limited routes:
@@ -121,6 +135,8 @@ avoid exposing infrastructure details.
 
 - Staging and production logs are structured JSON through Nest's
   `ConsoleLogger`.
+- Structured entries retain the numeric `timestamp` and add `at` as the same
+  instant formatted as an ISO 8601 UTC string.
 - Every HTTP response has an `X-Request-Id`. An incoming valid UUID is reused;
   otherwise the API generates one.
 - Request completion and failure logs include request ID, method, route/status,

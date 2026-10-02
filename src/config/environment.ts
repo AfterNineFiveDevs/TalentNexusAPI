@@ -22,6 +22,16 @@ const rawEnvironmentSchema = z.object({
   DATABASE_URL: z.url(),
   JWT_SECRET: z.string().min(1),
   JWT_EXPIRES_IN: z.string().trim().min(1),
+  GOOGLE_CLIENT_IDS: z
+    .string()
+    .trim()
+    .optional()
+    .transform((value) =>
+      (value ?? '')
+        .split(',')
+        .map((clientId) => clientId.trim())
+        .filter(Boolean),
+    ),
   REFRESH_TOKEN_TTL_SECONDS: z.coerce
     .number()
     .int()
@@ -63,6 +73,18 @@ export const environmentSchema = rawEnvironmentSchema.superRefine(
         code: 'custom',
         path: ['CORS_ORIGIN'],
         message: 'CORS_ORIGIN is required outside development and test',
+      });
+    }
+
+    if (
+      environment.ENVIRONMENT !== 'development' &&
+      environment.ENVIRONMENT !== 'test' &&
+      environment.GOOGLE_CLIENT_IDS.length === 0
+    ) {
+      context.addIssue({
+        code: 'custom',
+        path: ['GOOGLE_CLIENT_IDS'],
+        message: 'GOOGLE_CLIENT_IDS is required outside development and test',
       });
     }
 

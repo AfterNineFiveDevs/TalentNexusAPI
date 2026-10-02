@@ -1,4 +1,4 @@
-import { ConsoleLogger, VersioningType } from '@nestjs/common';
+import { VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ModulesContainer, NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 import { configureApiResponseHandling } from './common/http/configure-api-response-handling';
 import { requestContextMiddleware } from './common/observability/request-context.middleware';
+import { HumanReadableConsoleLogger } from './common/observability/human-readable-console.logger';
 import { applyZodSchemasToSwagger } from './common/swagger/zod-swagger';
 import {
   type Environment,
@@ -22,7 +23,7 @@ async function bootstrap() {
   const configuredLogLevel = config.getOrThrow('LOG_LEVEL', {
     infer: true,
   });
-  const logger = new ConsoleLogger({
+  const logger = new HumanReadableConsoleLogger({
     json:
       environment === 'staging' ||
       environment === 'production' ||
