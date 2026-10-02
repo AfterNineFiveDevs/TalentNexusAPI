@@ -7,13 +7,42 @@ model User {
   role                     Role                       @default(TALENT)
   termAccepted             Boolean
   signUpMethod             SignUpMethod               @default(EMAIL)
-  resetPasswordToken       String?
-  resetPasswordTokenExpiry DateTime?
-  verificationToken        String?
-  verifiedAt               DateTime?
+  verifiedAt               TimestamptzString?
   profile                  Profile?
+  authSessions             AuthSession[]
+  authActionTokens         AuthActionToken[]
   createdAt                TimestamptzString          @default(now())
   updatedAt                temporal.updatedAtString()
+}
+
+model AuthActionToken {
+  id         Uuid                   @id @default(uuid())
+  user       User                   @relation(fields:[userId], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "auth_action_token_user_id_fkey")
+  userId     Uuid
+  tokenHash  String                 @unique
+  purpose    AuthActionTokenPurpose
+  expiresAt  TimestamptzString
+  consumedAt TimestamptzString?
+  createdAt  TimestamptzString      @default(now())
+
+  @@index([userId, purpose])
+  @@index([expiresAt])
+}
+
+model AuthSession {
+  id                 Uuid                     @id @default(uuid())
+  user               User                     @relation(fields:[userId], references:[id], onDelete: Cascade, onUpdate: Cascade, map: "auth_session_user_id_fkey")
+  userId             Uuid
+  refreshTokenHash   String                   @unique
+  expiresAt          TimestamptzString
+  lastRotatedAt      TimestamptzString        @default(now())
+  revokedAt          TimestamptzString?
+  revocationReason   SessionRevocationReason?
+  createdAt          TimestamptzString        @default(now())
+  updatedAt          temporal.updatedAtString()
+
+  @@index([userId])
+  @@index([expiresAt])
 }
 
 model Profile {
@@ -50,4 +79,19 @@ enum SignUpMethod {
   EMAIL
   GOOGLE
   LinkedIn
+}
+
+enum SessionRevocationReason {
+  @@type("pg/text@1")
+
+  LOGOUT
+  LOGOUT_ALL
+  TOKEN_REUSE
+}
+
+enum AuthActionTokenPurpose {
+  @@type("pg/text@1")
+
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
 }

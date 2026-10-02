@@ -1,7 +1,9 @@
 import { Controller, Get, Version, VERSION_NEUTRAL } from '@nestjs/common';
+import { ApiBearerAuth } from '@nestjs/swagger';
 import { Public } from '../@decorators/public.decorator';
 import { HealthService } from './health.service';
 
+@ApiBearerAuth()
 @Controller('health')
 export class HealthController {
   constructor(private readonly healthService: HealthService) {}
