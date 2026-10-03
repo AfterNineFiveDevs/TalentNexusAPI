@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Create account · TalentNexus prototype</title>
+<link rel="stylesheet" href="../assets/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+</head>
+<body data-shell="public" data-active="" data-root="../">
+<main class="page page--narrow">
+
+<div class="stack" style="--gap: 20px; max-width: 460px; width: 100%; margin: 0 auto">
+<header class="stack" style="--gap: 6px"><h1 class="t-display">Create your account</h1><p class="t-body muted measure">Free. Your profile stays private until you choose to share it.</p></header>
+<div class="stack" style="--gap: 10px"><a class="btn btn--secondary btn--block" href="../public/verify-email.html" >Continue with Google</a><a class="btn btn--secondary btn--block" href="../public/verify-email.html" >Continue with LinkedIn</a></div>
+<p class="t-meta faint">or sign up with email</p>
+<form id="signup-form" class="stack" novalidate data-next="../public/verify-email.html">
+<div class="field"><label for="username">Full name</label><input class="input" id="username" name="username" autocomplete="name" value="Thiri Aung" aria-describedby="username-error"><span class="field-error" id="username-error" hidden></span><span class="t-meta muted">Letters and spaces only, 3–50 characters.</span></div>
+<div class="field"><label for="email">Email</label><input class="input" id="email" name="email" type="email" autocomplete="email" value="thiri@example.com" aria-describedby="email-error"><span class="field-error" id="email-error" hidden></span></div>
+<div class="field"><label for="password">Password</label><input class="input" id="password" name="password" type="password" autocomplete="new-password" value="password" aria-describedby="password-error password-hint"><span class="field-error" id="password-error" hidden></span><span class="t-meta muted" id="password-hint">8 or more characters with an uppercase letter, a lowercase letter, a number and a symbol.</span></div>
+<div class="field"><label for="confirmPassword">Confirm password</label><input class="input" id="confirmPassword" name="confirmPassword" type="password" autocomplete="new-password" aria-describedby="confirmPassword-error"><span class="field-error" id="confirmPassword-error" hidden></span></div>
+<div class="stack" style="--gap: 4px"><label class="check"><input type="checkbox" id="termsAccepted" name="termsAccepted" aria-describedby="termsAccepted-error"><span class="t-body">I agree to the <a href="#">Terms</a> and <a href="#">Privacy notice</a></span></label><span class="field-error" id="termsAccepted-error" hidden></span></div>
+<button class="btn btn--primary btn--block" type="submit">Create account</button>
+</form>
+<p class="t-meta muted">Already have an account? <a href="../public/sign-in.html">Sign in</a></p>
+<p class="note note--neutral t-meta">Prototype: the password is pre-filled as “password” so you can see the real validation messages from the sign-up contract.</p>
+</div>
+</main>
+<script src="../assets/app.js"></script>
+</body>
+</html>

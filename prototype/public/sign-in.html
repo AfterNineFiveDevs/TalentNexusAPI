@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sign in · TalentNexus prototype</title>
+<link rel="stylesheet" href="../assets/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+</head>
+<body data-shell="public" data-active="" data-root="../">
+<main class="page page--narrow">
+
+<div class="stack" style="--gap: 16px; max-width: 420px; width: 100%; margin: 0 auto">
+<header class="stack" style="--gap: 6px"><h1 class="t-display">Sign in</h1><p class="t-body muted measure">Jobs and CV tools are behind sign-in. Your profile is private until you choose to share it.</p></header>
+<form class="stack" data-next="../profile/profile.html" data-sign-in>
+<div class="field"><label for="si-user">Email or username</label><input class="input " id="si-user" name="si-user" type="text" value="thiri@example.com" autocomplete="username"></div>
+<div class="field"><label for="si-pass">Password</label><input class="input " id="si-pass" name="si-pass" type="password" value="Password1!" autocomplete="current-password"></div>
+<button class="btn btn--primary btn--block" type="submit">Sign in</button>
+</form>
+<a href="../public/forgot-password.html" class="t-strong">Forgot your password?</a>
+<p class="t-meta faint">or continue with</p>
+<a class="btn btn--secondary btn--block" href="../profile/profile.html" >Continue with Google</a><a class="btn btn--secondary btn--block" href="../profile/profile.html" >Continue with LinkedIn</a>
+<p class="t-meta muted">New here? <a href="../public/sign-up.html">Create a free account</a></p>
+</div>
+</main>
+<script src="../assets/app.js"></script>
+</body>
+</html>

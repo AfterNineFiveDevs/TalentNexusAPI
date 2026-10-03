@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Account settings · TalentNexus prototype</title>
+<link rel="stylesheet" href="../assets/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+</head>
+<body data-shell="candidate" data-active="profile" data-root="../">
+<main class="page">
+
+<header class="stack" style="--gap: 6px"><h1 class="t-display">Account settings</h1></header>
+<div class="stack" style="max-width: 720px">
+<section class="card"><h2 class="t-sub">Sign-in</h2><div class="row row--top"><div class="field"><label for="as-n">Name</label><input class="input " id="as-n" name="as-n" type="text" value="Thiri Aung" ></div><div class="field"><label for="as-e">Email</label><input class="input " id="as-e" name="as-e" type="email" value="thiri@example.com" ></div></div><div class="row" style="--gap: 8px"><span class="chip chip--good"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--good)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Google connected</span><span class="chip chip--dashed">LinkedIn not connected</span></div><a class="btn btn--secondary btn--sm" href="../public/reset-password.html" style="align-self: flex-start">Change password</a></section>
+<section class="card"><h2 class="t-sub">Email preferences</h2><label class="check"><input type="checkbox" checked><span class="t-body">When a saved job closes</span></label><label class="check"><input type="checkbox" checked><span class="t-body">Trial and billing reminders (always on while a trial is running)</span></label><label class="check"><input type="checkbox"><span class="t-body">Product news, at most once a month</span></label></section>
+<section class="card"><h2 class="t-sub">Plan</h2><p class="t-body muted">Free plan. <span data-trial="active" hidden>Premium trial: <strong data-trial-days></strong> days left.</span></p><a class="btn btn--secondary btn--sm" href="../account/plans.html" style="align-self: flex-start">See plans</a></section>
+<section class="card card--error"><h2 class="t-sub c-stop">Delete account</h2><p class="t-body muted">Deletes your profile, CVs, uploaded files and share links. Public links stop working immediately. [Retention period for backups to be confirmed, BR-SEC-010.]</p><button type="button" class="btn btn--danger btn--sm" data-open-dialog="delete-dialog" style="align-self: flex-start">Delete my account</button></section>
+</div>
+<dialog id="delete-dialog" aria-labelledby="del-h"><div class="dialog__body"><h2 class="t-title" id="del-h">Delete your account?</h2><p class="t-body muted">This can’t be undone. Download your data first if you want a copy.</p><div class="field"><label for="del-c">Type DELETE to confirm</label><input class="input " id="del-c" name="del-c" type="text" value="" ></div><div class="row"><button type="button" class="btn btn--danger" data-close-dialog data-toast="Prototype: account would be deleted">Delete account</button><button type="button" class="btn btn--secondary" data-close-dialog>Cancel</button></div></div></dialog>
+</main>
+<script src="../assets/app.js"></script>
+</body>
+</html>

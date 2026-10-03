@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Preview and export · TalentNexus prototype</title>
+<link rel="stylesheet" href="../assets/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+</head>
+<body data-shell="candidate" data-active="cvs" data-root="../">
+<main class="page">
+
+<a class="btn btn--ghost" href="../cv/cv-editor.html" style="align-self: flex-start; padding: 0 4px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>Back to editor</a>
+<div class="split" style="grid-template-columns: minmax(0, 1fr) 380px">
+<div class="stage"><article class="paper" aria-label="CV preview">
+<span class="t-title">Thiri Aung</span><span class="t-meta muted">Yangon · thiri@example.com · +95 9 123 456</span>
+<h4>WORK EXPERIENCE</h4>
+<span class="t-strong">Senior Accountant — Golden Star Trading</span><span class="t-meta muted">Mar 2021 – Present</span>
+<span class="t-meta" id="paper-bullet">Responsible for monthly accounts, supplier payments and stock reconciliation across three branches.</span>
+<span class="t-strong">Accounts Assistant — Shwe Trading</span><span class="t-meta muted">2019 – 2021</span>
+<span class="t-meta">Prepared supplier invoices and bank reconciliations for the finance team.</span>
+<h4>EDUCATION</h4><span class="t-meta">B.Com — Yangon University of Economics</span>
+<h4>SKILLS</h4><span class="t-meta">Excel, bank reconciliation, supplier payments, stock control. Burmese, English.</span>
+</article></div>
+<div class="stack sticky">
+<div class="card" style="gap: 14px"><h1 class="t-display">Preview</h1><span class="t-sub">Accounting roles — Yangon</span><span class="t-meta muted">Template: Plain. Built for software to read.</span>
+<button type="button" class="btn btn--primary btn--lg btn--block" data-toast="Thiri_Aung_Accounting.pdf downloaded"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12"/><path d="m7 11 5 5 5-5"/><path d="M4 20h16"/></svg>Download PDF</button>
+<span class="row t-meta c-good" style="--gap: 6px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--good)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Free, unlimited, no watermark</span><span class="row t-meta c-good" style="--gap: 6px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--good)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>This is exactly what downloads.</span></div>
+<div class="row" style="--gap: 8px"><a class="btn btn--secondary btn--sm" href="../cv/quality-ats.html" style="flex: 1 1 0">Check this CV</a><a class="btn btn--secondary btn--sm" href="../account/sharing-privacy.html" style="flex: 1 1 0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>Share link</a></div>
+</div></div>
+</main>
+<script src="../assets/app.js"></script>
+</body>
+</html>

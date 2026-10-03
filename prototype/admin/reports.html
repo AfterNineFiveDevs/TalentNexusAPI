@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Admin · Reports · TalentNexus prototype</title>
+<link rel="stylesheet" href="../assets/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+</head>
+<body data-shell="admin" data-active="reports" data-root="../">
+<main class="page">
+
+<div class="split" style="grid-template-columns: minmax(0, 1fr) 420px">
+<div class="stack"><div class="row row--between row--top"><header class="stack" style="--gap: 6px"><h1 class="t-display">Listing reports</h1></header><div class="field"><label for="ar-s">Show</label><select class="select" id="ar-s"><option>Open reports (13)</option><option>Resolved</option></select></div></div>
+<div class="table-wrap"><table><thead><tr><th>Listing</th><th>Main reason</th><th>Reports</th><th>Status</th></tr></thead><tbody><tr aria-selected="true"><td><span class="stack" style="--gap: 2px"><span class="t-strong">Data Entry, work from home</span><span class="t-meta muted">Shwe Star Agency</span></span></td><td>Asks for money to apply</td><td><strong>7</strong></td><td><span class="chip chip--primary"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Under review</span></td></tr><tr><td><span class="stack" style="--gap: 2px"><span class="t-strong">Sales Executive</span><span class="t-meta muted">Pyinsa Telecom</span></span></td><td>No longer open</td><td>3</td><td><span class="chip chip--primary"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Under review</span></td></tr><tr><td><span class="stack" style="--gap: 2px"><span class="t-strong">Accountant</span><span class="t-meta muted">Nwe Oo Microfinance</span></span></td><td>Duplicate listing</td><td>2</td><td><span class="chip chip--primary"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Under review</span></td></tr><tr><td><span class="stack" style="--gap: 2px"><span class="t-strong">Driver</span><span class="t-meta muted">Unknown company</span></span></td><td>Misleading pay</td><td>1</td><td><span class="chip chip--stop">Confirmed violation</span></td></tr></tbody></table></div>
+<p class="t-meta muted">“Under review” and “Confirmed violation” are kept separate. Candidates only see a listing removed once a violation is confirmed (BR-TRU-006).</p></div>
+<aside class="card sticky"><h2 class="t-title">Data Entry, work from home</h2><span class="t-meta muted">Shwe Star Agency · not verified · partner feed</span><span class="chip chip--primary"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Under review</span>
+<p class="t-body"><strong>7 reports.</strong> 5 say the employer asked for a registration fee by phone.</p>
+<div class="field"><label for="ar-note">Decision note, saved to the audit log</label><textarea class="textarea" id="ar-note">Fee request confirmed with two reporters.</textarea></div>
+<div class="row" style="--gap: 8px"><button type="button" class="btn btn--danger btn--sm" data-toast="Removed. Decision recorded.">Confirm violation and remove</button><button type="button" class="btn btn--secondary btn--sm" data-toast="Reports dismissed. Decision recorded.">Dismiss reports</button></div>
+<div class="stack" style="--gap: 6px; border-top: 1px solid var(--border); padding-top: 12px"><span class="t-micro faint">Audit log</span><span class="t-meta muted">30 Sep, 14:02 · Hidden from search by Su Su (ops)</span><span class="t-meta muted">30 Sep, 09:15 · Seventh report received</span></div></aside>
+</div>
+</main>
+<script src="../assets/app.js"></script>
+</body>
+</html>

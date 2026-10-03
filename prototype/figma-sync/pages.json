@@ -1,0 +1,90 @@
+[
+ {
+  "id": "1-foundations",
+  "name": "Foundations",
+  "boards": [
+   "Main.dc.html",
+   "X15States.dc.html"
+  ]
+ },
+ {
+  "id": "2-mobile",
+  "name": "Candidate mobile",
+  "boards": [
+   "M01SignIn.dc.html",
+   "M02Upload.dc.html",
+   "M03Review.dc.html",
+   "M04Profile.dc.html",
+   "M05SectionEditor.dc.html",
+   "M06MyCVs.dc.html",
+   "M07CVEditor.dc.html",
+   "M08Templates.dc.html",
+   "M09Preview.dc.html",
+   "M10QualityATS.dc.html",
+   "M11JobSearch.dc.html",
+   "M12JobMatch.dc.html",
+   "M13Sharing.dc.html",
+   "MX01SignUp.dc.html",
+   "MX02VerifyEmail.dc.html",
+   "MX03SavedJobs.dc.html",
+   "MX04Plans.dc.html",
+   "MX05TrialStart.dc.html",
+   "MX06TrialReminder.dc.html",
+   "MX07TrialEnded.dc.html",
+   "MX08Tailor.dc.html"
+  ]
+ },
+ {
+  "id": "3-web",
+  "name": "Candidate web",
+  "boards": [
+   "X01Landing.dc.html",
+   "X02SignUp.dc.html",
+   "X03VerifyEmail.dc.html",
+   "D01SignIn.dc.html",
+   "X04ForgotPassword.dc.html",
+   "X05ResetPassword.dc.html",
+   "D02Upload.dc.html",
+   "X06LinkedInImport.dc.html",
+   "D03Review.dc.html",
+   "D04Profile.dc.html",
+   "D06MyCVs.dc.html",
+   "D07CVEditor.dc.html",
+   "D09Preview.dc.html",
+   "D10QualityATS.dc.html",
+   "X07TailorToJob.dc.html",
+   "D11JobSearch.dc.html",
+   "D12JobMatch.dc.html",
+   "X08SavedJobs.dc.html",
+   "D13Sharing.dc.html",
+   "X09AccountSettings.dc.html",
+   "X10Plans.dc.html",
+   "X11TrialStart.dc.html",
+   "X12TrialReminder.dc.html",
+   "X13TrialEnded.dc.html",
+   "X14Checkout.dc.html"
+  ]
+ },
+ {
+  "id": "5-admin",
+  "name": "Admin",
+  "boards": [
+   "A1Jobs.dc.html",
+   "A2Reports.dc.html",
+   "A3Verification.dc.html",
+   "A4Users.dc.html",
+   "A5Subscriptions.dc.html",
+   "A6Analytics.dc.html"
+  ]
+ },
+ {
+  "id": "6-employer",
+  "name": "Employer (Phase 3)",
+  "boards": [
+   "E1Verify.dc.html",
+   "E2PostJob.dc.html",
+   "E3Applicants.dc.html",
+   "E4FindCandidates.dc.html"
+  ]
+ }
+]
