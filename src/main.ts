@@ -13,9 +13,31 @@ import {
   type EnvironmentVariables,
   logLevels,
 } from './config/environment';
+import { fileURLToPath } from 'url';
+import { Transport, type MicroserviceOptions } from '@nestjs/microservices';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
+
+  const protoPath = fileURLToPath(
+    import.meta
+      .resolve('@talent-nexus/contracts/proto/ingestion/v1/job-ingestion.proto'),
+  );
+
+  app.connectMicroservice<MicroserviceOptions>(
+    {
+      transport: Transport.GRPC,
+      options: {
+        package: 'talentnexus.ingestion.v1',
+        protoPath,
+        url: process.env.GRPC_URL ?? '0.0.0.0:50051',
+      },
+    },
+    {
+      inheritAppConfig: true,
+    },
+  );
+
   const config = app.get(ConfigService<EnvironmentVariables, true>);
   const environment = config.getOrThrow<Environment>('ENVIRONMENT', {
     infer: true,
@@ -97,6 +119,7 @@ async function bootstrap() {
     SwaggerModule.setup('api', app, documentFactory);
   }
 
+  await app.startAllMicroservices();
   await app.listen(config.getOrThrow<number>('PORT'));
 }
 void bootstrap().catch((error: unknown) => {
