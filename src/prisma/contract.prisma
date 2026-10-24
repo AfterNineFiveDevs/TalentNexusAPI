@@ -79,6 +79,35 @@ model Cv {
   updatedAt temporal.updatedAtString()
 }
 
+model Job {
+  id             Uuid      @id @default(uuid())
+  sourceId       String
+  externalId     String
+  sourceUrl      String
+
+  title          String
+  companyName    String
+  description    String
+  location       String
+  applicationUrl String[]
+
+  status         JobStatus @default(PENDING)
+
+  reviewedById   Uuid?
+  reviewedBy     User?     @relation(fields: [reviewedById], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  reviewedAt     TimestamptzString?
+  reviewNote     String?
+
+  publishedAt    TimestamptzString?
+  closedAt       TimestamptzString?
+  lastSeenAt     TimestamptzString @default(now())
+  createdAt      TimestamptzString @default(now())
+  updatedAt      temporal.updatedAtString()
+
+  @@unique([sourceId, externalId])
+  @@index([status, publishedAt])
+}
+
 enum Role {
   @@type("pg/text@1")
 
@@ -114,4 +143,13 @@ enum AuthProvider {
   @@type("pg/text@1")
 
   GOOGLE
+}
+
+enum JobStatus {
+  @@type("pg/text@1")
+
+  PENDING
+  PUBLISHED
+  REJECTED
+  CLOSED
 }

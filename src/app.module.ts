@@ -10,6 +10,7 @@ import { validateEnvironment } from './config/environment';
 import { HealthModule } from './health/health.module';
 import { PrismaLifecycleService } from './prisma/prisma-lifecycle.service';
 import { UsersModule } from './users/users.module';
+import { IngestionModule } from './ingestion/ingestion.module.js';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { UsersModule } from './users/users.module';
         },
       ],
     }),
+    IngestionModule,
   ],
   controllers: [AppController],
   providers: [

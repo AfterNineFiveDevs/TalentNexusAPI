@@ -34,9 +34,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'01efed2bcc43ce716f0c8be6301e57ad3efafb638a4fead5d5df639f86a6c2fd'>;
+  StorageHashBase<'400e034cd7414bffdc1c1d13f47f2158e20c239ac3942839b51b6c7c011e8f1c'>;
 export type ExecutionHash =
-  ExecutionHashBase<'8384731f28805a9c8f3682ae2e364976a805dbfb9ea3dd4c0234412821b4da16'>;
+  ExecutionHashBase<'196f75fe6bb842a5e5c48f84163e421508ef9a3ead6745e0dab8defa070a7228'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -277,6 +277,26 @@ export type FieldOutputTypes = {
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
     };
+    readonly Job: {
+      readonly id: CodecTypes['pg/uuid@1']['output'];
+      readonly sourceId: CodecTypes['pg/text@1']['output'];
+      readonly externalId: CodecTypes['pg/text@1']['output'];
+      readonly sourceUrl: CodecTypes['pg/text@1']['output'];
+      readonly title: CodecTypes['pg/text@1']['output'];
+      readonly companyName: CodecTypes['pg/text@1']['output'];
+      readonly description: CodecTypes['pg/text@1']['output'];
+      readonly location: CodecTypes['pg/text@1']['output'];
+      readonly applicationUrl: ReadonlyArray<CodecTypes['pg/text@1']['output']>;
+      readonly status: 'PENDING' | 'PUBLISHED' | 'REJECTED' | 'CLOSED';
+      readonly reviewedById: CodecTypes['pg/uuid@1']['output'] | null;
+      readonly reviewedAt: CodecTypes['pg/timestamptz-string@1']['output'] | null;
+      readonly reviewNote: CodecTypes['pg/text@1']['output'] | null;
+      readonly publishedAt: CodecTypes['pg/timestamptz-string@1']['output'] | null;
+      readonly closedAt: CodecTypes['pg/timestamptz-string@1']['output'] | null;
+      readonly lastSeenAt: CodecTypes['pg/timestamptz-string@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
+    };
     readonly Profile: {
       readonly id: CodecTypes['pg/uuid@1']['output'];
       readonly photo: CodecTypes['pg/text@1']['output'] | null;
@@ -334,6 +354,26 @@ export type FieldInputTypes = {
       readonly id: CodecTypes['pg/uuid@1']['input'];
       readonly file: CodecTypes['pg/text@1']['input'];
       readonly userId: CodecTypes['pg/uuid@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
+    };
+    readonly Job: {
+      readonly id: CodecTypes['pg/uuid@1']['input'];
+      readonly sourceId: CodecTypes['pg/text@1']['input'];
+      readonly externalId: CodecTypes['pg/text@1']['input'];
+      readonly sourceUrl: CodecTypes['pg/text@1']['input'];
+      readonly title: CodecTypes['pg/text@1']['input'];
+      readonly companyName: CodecTypes['pg/text@1']['input'];
+      readonly description: CodecTypes['pg/text@1']['input'];
+      readonly location: CodecTypes['pg/text@1']['input'];
+      readonly applicationUrl: ReadonlyArray<CodecTypes['pg/text@1']['input']>;
+      readonly status: 'PENDING' | 'PUBLISHED' | 'REJECTED' | 'CLOSED';
+      readonly reviewedById: CodecTypes['pg/uuid@1']['input'] | null;
+      readonly reviewedAt: CodecTypes['pg/timestamptz-string@1']['input'] | null;
+      readonly reviewNote: CodecTypes['pg/text@1']['input'] | null;
+      readonly publishedAt: CodecTypes['pg/timestamptz-string@1']['input'] | null;
+      readonly closedAt: CodecTypes['pg/timestamptz-string@1']['input'] | null;
+      readonly lastSeenAt: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
     };
@@ -397,6 +437,26 @@ export type StorageColumnTypes = {
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly userId: CodecTypes['pg/uuid@1']['output'];
     };
+    readonly job: {
+      readonly applicationUrl: ReadonlyArray<CodecTypes['pg/text@1']['output']>;
+      readonly closedAt: CodecTypes['pg/timestamptz-string@1']['output'] | null;
+      readonly companyName: CodecTypes['pg/text@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
+      readonly description: CodecTypes['pg/text@1']['output'];
+      readonly externalId: CodecTypes['pg/text@1']['output'];
+      readonly id: CodecTypes['pg/uuid@1']['output'];
+      readonly lastSeenAt: CodecTypes['pg/timestamptz-string@1']['output'];
+      readonly location: CodecTypes['pg/text@1']['output'];
+      readonly publishedAt: CodecTypes['pg/timestamptz-string@1']['output'] | null;
+      readonly reviewedAt: CodecTypes['pg/timestamptz-string@1']['output'] | null;
+      readonly reviewedById: CodecTypes['pg/uuid@1']['output'] | null;
+      readonly reviewNote: CodecTypes['pg/text@1']['output'] | null;
+      readonly sourceId: CodecTypes['pg/text@1']['output'];
+      readonly sourceUrl: CodecTypes['pg/text@1']['output'];
+      readonly status: 'PENDING' | 'PUBLISHED' | 'REJECTED' | 'CLOSED';
+      readonly title: CodecTypes['pg/text@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
+    };
     readonly profile: {
       readonly bio: CodecTypes['pg/text@1']['output'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
@@ -456,6 +516,26 @@ export type StorageColumnInputTypes = {
       readonly id: CodecTypes['pg/uuid@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly userId: CodecTypes['pg/uuid@1']['input'];
+    };
+    readonly job: {
+      readonly applicationUrl: ReadonlyArray<CodecTypes['pg/text@1']['input']>;
+      readonly closedAt: CodecTypes['pg/timestamptz-string@1']['input'] | null;
+      readonly companyName: CodecTypes['pg/text@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
+      readonly description: CodecTypes['pg/text@1']['input'];
+      readonly externalId: CodecTypes['pg/text@1']['input'];
+      readonly id: CodecTypes['pg/uuid@1']['input'];
+      readonly lastSeenAt: CodecTypes['pg/timestamptz-string@1']['input'];
+      readonly location: CodecTypes['pg/text@1']['input'];
+      readonly publishedAt: CodecTypes['pg/timestamptz-string@1']['input'] | null;
+      readonly reviewedAt: CodecTypes['pg/timestamptz-string@1']['input'] | null;
+      readonly reviewedById: CodecTypes['pg/uuid@1']['input'] | null;
+      readonly reviewNote: CodecTypes['pg/text@1']['input'] | null;
+      readonly sourceId: CodecTypes['pg/text@1']['input'];
+      readonly sourceUrl: CodecTypes['pg/text@1']['input'];
+      readonly status: 'PENDING' | 'PUBLISHED' | 'REJECTED' | 'CLOSED';
+      readonly title: CodecTypes['pg/text@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
     };
     readonly profile: {
       readonly bio: CodecTypes['pg/text@1']['input'] | null;
@@ -553,6 +633,28 @@ export namespace Models {
     user: public_User;
     readonly [RelationKeys]?: 'user';
   };
+  export type public_Job = {
+    id: CodecTypes['pg/uuid@1']['output'];
+    sourceId: CodecTypes['pg/text@1']['output'];
+    externalId: CodecTypes['pg/text@1']['output'];
+    sourceUrl: CodecTypes['pg/text@1']['output'];
+    title: CodecTypes['pg/text@1']['output'];
+    companyName: CodecTypes['pg/text@1']['output'];
+    description: CodecTypes['pg/text@1']['output'];
+    location: CodecTypes['pg/text@1']['output'];
+    applicationUrl: ReadonlyArray<CodecTypes['pg/text@1']['output']>;
+    status: 'PENDING' | 'PUBLISHED' | 'REJECTED' | 'CLOSED';
+    reviewedById: CodecTypes['pg/uuid@1']['output'] | null;
+    reviewedAt: CodecTypes['pg/timestamptz-string@1']['output'] | null;
+    reviewNote: CodecTypes['pg/text@1']['output'] | null;
+    publishedAt: CodecTypes['pg/timestamptz-string@1']['output'] | null;
+    closedAt: CodecTypes['pg/timestamptz-string@1']['output'] | null;
+    lastSeenAt: CodecTypes['pg/timestamptz-string@1']['output'];
+    createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
+    updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
+    reviewedBy: public_User | null;
+    readonly [RelationKeys]?: 'reviewedBy';
+  };
 }
 
 export declare const models: {
@@ -563,6 +665,7 @@ export declare const models: {
     AuthSession: Models.public_AuthSession;
     Profile: Models.public_Profile;
     Cv: Models.public_Cv;
+    Job: Models.public_Job;
   };
 };
 
@@ -861,6 +964,136 @@ type ContractBase = Omit<
                 },
               ];
             };
+            readonly job: {
+              columns: {
+                readonly id: {
+                  readonly nativeType: 'uuid';
+                  readonly codecId: 'pg/uuid@1';
+                  readonly nullable: false;
+                };
+                readonly sourceId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly externalId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly sourceUrl: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly title: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly companyName: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly description: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly location: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly applicationUrl: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly status: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'PENDING'>;
+                  };
+                };
+                readonly reviewedById: {
+                  readonly nativeType: 'uuid';
+                  readonly codecId: 'pg/uuid@1';
+                  readonly nullable: true;
+                };
+                readonly reviewedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-string@1';
+                  readonly nullable: true;
+                };
+                readonly reviewNote: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly publishedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-string@1';
+                  readonly nullable: true;
+                };
+                readonly closedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-string@1';
+                  readonly nullable: true;
+                };
+                readonly lastSeenAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-string@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-string@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly updatedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-string@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [{ readonly columns: readonly ['sourceId', 'externalId'] }];
+              indexes: readonly [
+                {
+                  readonly name: 'job_status_publishedAt_idx_4d4b1960';
+                  readonly prefix: 'job_status_publishedAt_idx';
+                  readonly columns: readonly ['status', 'publishedAt'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'job_reviewedById_idx_e2835478';
+                  readonly prefix: 'job_reviewedById_idx';
+                  readonly columns: readonly ['reviewedById'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'job';
+                    readonly columns: readonly ['reviewedById'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'user';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
             readonly profile: {
               columns: {
                 readonly id: {
@@ -996,6 +1229,10 @@ type ContractBase = Omit<
               readonly kind: 'valueSet';
               readonly values: readonly ['GOOGLE'];
             };
+            readonly JobStatus: {
+              readonly kind: 'valueSet';
+              readonly values: readonly ['PENDING', 'PUBLISHED', 'REJECTED', 'CLOSED'];
+            };
             readonly Role: {
               readonly kind: 'valueSet';
               readonly values: readonly ['TALENT', 'RECRUITER', 'ADMIN'];
@@ -1034,6 +1271,7 @@ type ContractBase = Omit<
     };
     readonly profile: { readonly namespace: 'public' & NamespaceId; readonly model: 'Profile' };
     readonly cv: { readonly namespace: 'public' & NamespaceId; readonly model: 'Cv' };
+    readonly job: { readonly namespace: 'public' & NamespaceId; readonly model: 'Job' };
   };
   readonly domain: {
     readonly namespaces: {
@@ -1294,6 +1532,136 @@ type ContractBase = Omit<
               };
             };
           };
+          readonly Job: {
+            readonly fields: {
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
+              readonly sourceId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly externalId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly sourceUrl: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly title: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly companyName: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly description: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly location: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly applicationUrl: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+                readonly many: true;
+              };
+              readonly status: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly reviewedById: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
+              readonly reviewedAt: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-string@1';
+                };
+              };
+              readonly reviewNote: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly publishedAt: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-string@1';
+                };
+              };
+              readonly closedAt: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-string@1';
+                };
+              };
+              readonly lastSeenAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-string@1';
+                };
+              };
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-string@1';
+                };
+              };
+              readonly updatedAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-string@1';
+                };
+              };
+            };
+            readonly relations: {
+              readonly reviewedBy: {
+                readonly to: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
+                readonly cardinality: 'N:1';
+                readonly nullable: true;
+                readonly on: {
+                  readonly localFields: readonly ['reviewedById'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'job';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly id: { readonly column: 'id' };
+                readonly sourceId: { readonly column: 'sourceId' };
+                readonly externalId: { readonly column: 'externalId' };
+                readonly sourceUrl: { readonly column: 'sourceUrl' };
+                readonly title: { readonly column: 'title' };
+                readonly companyName: { readonly column: 'companyName' };
+                readonly description: { readonly column: 'description' };
+                readonly location: { readonly column: 'location' };
+                readonly applicationUrl: { readonly column: 'applicationUrl' };
+                readonly status: { readonly column: 'status' };
+                readonly reviewedById: { readonly column: 'reviewedById' };
+                readonly reviewedAt: { readonly column: 'reviewedAt' };
+                readonly reviewNote: { readonly column: 'reviewNote' };
+                readonly publishedAt: { readonly column: 'publishedAt' };
+                readonly closedAt: { readonly column: 'closedAt' };
+                readonly lastSeenAt: { readonly column: 'lastSeenAt' };
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly updatedAt: { readonly column: 'updatedAt' };
+              };
+            };
+          };
           readonly Profile: {
             readonly fields: {
               readonly id: {
@@ -1509,6 +1877,15 @@ type ContractBase = Omit<
             readonly codecId: 'pg/text@1';
             readonly members: readonly [{ readonly name: 'GOOGLE'; readonly value: 'GOOGLE' }];
           };
+          readonly JobStatus: {
+            readonly codecId: 'pg/text@1';
+            readonly members: readonly [
+              { readonly name: 'PENDING'; readonly value: 'PENDING' },
+              { readonly name: 'PUBLISHED'; readonly value: 'PUBLISHED' },
+              { readonly name: 'REJECTED'; readonly value: 'REJECTED' },
+              { readonly name: 'CLOSED'; readonly value: 'CLOSED' },
+            ];
+          };
         };
       };
     };
@@ -1590,6 +1967,23 @@ type ContractBase = Omit<
           readonly ref: {
             readonly namespace: 'public';
             readonly table: 'cv';
+            readonly column: 'updatedAt';
+          };
+          readonly onCreate: { readonly kind: 'generator'; readonly id: 'timestampNow' };
+          readonly onUpdate: { readonly kind: 'generator'; readonly id: 'timestampNow' };
+        },
+        {
+          readonly ref: {
+            readonly namespace: 'public';
+            readonly table: 'job';
+            readonly column: 'id';
+          };
+          readonly onCreate: { readonly kind: 'generator'; readonly id: 'uuidv4' };
+        },
+        {
+          readonly ref: {
+            readonly namespace: 'public';
+            readonly table: 'job';
             readonly column: 'updatedAt';
           };
           readonly onCreate: { readonly kind: 'generator'; readonly id: 'timestampNow' };

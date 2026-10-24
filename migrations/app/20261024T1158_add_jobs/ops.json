@@ -1,0 +1,203 @@
+[
+  {
+    "id": "table.job",
+    "label": "Create table \"job\"",
+    "summary": "Creates table \"job\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "job"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"job\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"job\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"job\"",
+        "sql": "CREATE TABLE \"public\".\"job\" (\n  \"applicationUrl\" text[] NOT NULL,\n  \"closedAt\" timestamptz,\n  \"companyName\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"description\" text NOT NULL,\n  \"externalId\" text NOT NULL,\n  \"id\" uuid NOT NULL,\n  \"lastSeenAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"location\" text NOT NULL,\n  \"publishedAt\" timestamptz,\n  \"reviewNote\" text,\n  \"reviewedAt\" timestamptz,\n  \"reviewedById\" uuid,\n  \"sourceId\" text NOT NULL,\n  \"sourceUrl\" text NOT NULL,\n  \"status\" text DEFAULT 'PENDING' NOT NULL,\n  \"title\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"job_applicationUrl_elem_not_null_f9c0b0af\" CHECK (array_position(\"applicationUrl\", NULL) IS NULL),\n  CONSTRAINT \"job_status_check_9bea1b51\" CHECK (\"status\" IN ('PENDING', 'PUBLISHED', 'REJECTED', 'CLOSED'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"job\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"job\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.job.job_sourceId_externalId_key",
+    "label": "Add unique constraint on \"job\" (sourceId, externalId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "job_sourceId_externalId_key",
+        "table": "job"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"job_sourceId_externalId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "job_sourceId_externalId_key",
+          "public",
+          "\"public\".\"job\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"job_sourceId_externalId_key\"",
+        "sql": "ALTER TABLE \"public\".\"job\" ADD CONSTRAINT \"job_sourceId_externalId_key\" UNIQUE (\"sourceId\", \"externalId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"job_sourceId_externalId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "job_sourceId_externalId_key",
+          "public",
+          "\"public\".\"job\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.job.job_reviewedById_idx_e2835478",
+    "label": "Create index \"job_reviewedById_idx_e2835478\" on \"job\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "job_reviewedById_idx_e2835478",
+        "table": "job"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"job_reviewedById_idx_e2835478\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"job_reviewedById_idx_e2835478\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"job_reviewedById_idx_e2835478\"",
+        "sql": "CREATE INDEX \"job_reviewedById_idx_e2835478\" ON \"public\".\"job\" (\"reviewedById\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"job_reviewedById_idx_e2835478\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"job_reviewedById_idx_e2835478\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.job.job_status_publishedAt_idx_4d4b1960",
+    "label": "Create index \"job_status_publishedAt_idx_4d4b1960\" on \"job\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "job_status_publishedAt_idx_4d4b1960",
+        "table": "job"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"job_status_publishedAt_idx_4d4b1960\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"job_status_publishedAt_idx_4d4b1960\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"job_status_publishedAt_idx_4d4b1960\"",
+        "sql": "CREATE INDEX \"job_status_publishedAt_idx_4d4b1960\" ON \"public\".\"job\" (\"status\", \"publishedAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"job_status_publishedAt_idx_4d4b1960\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"job_status_publishedAt_idx_4d4b1960\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.job.job_reviewedById_fkey",
+    "label": "Add foreign key \"job_reviewedById_fkey\" on \"job\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "job_reviewedById_fkey",
+        "table": "job"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"job_reviewedById_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "job_reviewedById_fkey",
+          "public",
+          "\"public\".\"job\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"job_reviewedById_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"job\"\nADD CONSTRAINT \"job_reviewedById_fkey\"\nFOREIGN KEY (\"reviewedById\")\nREFERENCES \"public\".\"user\" (\"id\")\nON DELETE SET NULL\nON UPDATE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"job_reviewedById_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "job_reviewedById_fkey",
+          "public",
+          "\"public\".\"job\""
+        ]
+      }
+    ]
+  }
+]
