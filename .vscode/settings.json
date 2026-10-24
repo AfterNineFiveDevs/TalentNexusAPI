@@ -1,17 +1,4 @@
 {
-  "sqltools.connections": [
-    {
-      "ssh": "Disabled",
-      "previewLimit": 50,
-      "server": "localhost",
-      "port": 5432,
-      "driver": "PostgreSQL",
-      "name": "dev",
-      "database": "talentnexus",
-      "username": "myuser",
-      "password": "mysecretpassword"
-    }
-  ],
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "[typescript]": {

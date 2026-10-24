@@ -7,7 +7,7 @@ import type {
 import { Public } from 'src/@decorators/public.decorator';
 import { HumanReadableConsoleLogger } from 'src/common/observability/human-readable-console.logger';
 
-@Controller('ingestion')
+@Controller()
 export class IngestionGrpcController {
   private readonly logger = new Logger(IngestionGrpcController.name);
 

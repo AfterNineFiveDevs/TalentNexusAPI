@@ -119,8 +119,8 @@ async function bootstrap() {
     SwaggerModule.setup('api', app, documentFactory);
   }
 
-  await app.startAllMicroservices();
   await app.listen(config.getOrThrow<number>('PORT'));
+  await app.startAllMicroservices();
 }
 void bootstrap().catch((error: unknown) => {
   console.error('Application bootstrap failed', error);
