@@ -1,0 +1,7 @@
+version: 1
+name: brevo-admin-email
+origin: api.brevo.com
+interceptRequests: true
+scenarios:
+  - name: default
+    path: default.js

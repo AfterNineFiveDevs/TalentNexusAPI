@@ -20,7 +20,9 @@
     "test:debug": "vitest --inspect-brk --no-file-parallelism",
     "test:e2e": "vitest run --config vitest.e2e.config.ts",
     "postinstall": "prisma skills sync || exit 0",
-    "contract:emit": "prisma contract emit"
+    "contract:emit": "prisma contract emit",
+    "db:migrate": "prisma db migrate",
+    "admin:access": "node scripts/admin-access.mjs"
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.14.6",
@@ -35,11 +37,12 @@
     "@nestjs/swagger": "^12.0.0",
     "@nestjs/throttler": "^6.7.0",
     "@prisma/orm-postgres": "^8.0.0-rc.11",
-    "@talent-nexus/contracts": "^1.1.0-dev.2",
+    "@talent-nexus/contracts": "^1.1.0-dev.3",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "dotenv": "^18.0.1",
     "google-auth-library": "^11.1.0",
+    "otplib": "^13.6.0",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",

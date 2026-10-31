@@ -31,6 +31,9 @@ async function bootstrap() {
         package: 'talentnexus.ingestion.v1',
         protoPath,
         url: process.env.GRPC_URL ?? '0.0.0.0:50051',
+        loader: {
+          arrays: true,
+        },
       },
     },
     {
@@ -111,6 +114,11 @@ async function bootstrap() {
         config.getOrThrow('REFRESH_TOKEN_COOKIE_NAME', { infer: true }),
         { type: 'apiKey', in: 'cookie' },
         'refresh',
+      )
+      .addCookieAuth(
+        config.getOrThrow('ADMIN_REFRESH_COOKIE_NAME', { infer: true }),
+        { type: 'apiKey', in: 'cookie' },
+        'admin-refresh',
       )
       .build();
     const document = SwaggerModule.createDocument(app, swaggerConfig);

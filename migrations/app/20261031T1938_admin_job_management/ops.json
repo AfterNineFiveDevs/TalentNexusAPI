@@ -1,0 +1,500 @@
+[
+  {
+    "id": "column.public.job.adminEditedAt",
+    "label": "Add column \"adminEditedAt\" to \"job\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "adminEditedAt",
+        "table": "job"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"adminEditedAt\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "job",
+          "adminEditedAt"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"adminEditedAt\"",
+        "sql": "ALTER TABLE \"public\".\"job\" ADD COLUMN \"adminEditedAt\" timestamptz"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"adminEditedAt\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "job",
+          "adminEditedAt"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.job.deletedAt",
+    "label": "Add column \"deletedAt\" to \"job\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "deletedAt",
+        "table": "job"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"deletedAt\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "job",
+          "deletedAt"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"deletedAt\"",
+        "sql": "ALTER TABLE \"public\".\"job\" ADD COLUMN \"deletedAt\" timestamptz"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"deletedAt\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "job",
+          "deletedAt"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.job.lastAdminAction",
+    "label": "Add column \"lastAdminAction\" to \"job\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "lastAdminAction",
+        "table": "job"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"lastAdminAction\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "job",
+          "lastAdminAction"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"lastAdminAction\"",
+        "sql": "ALTER TABLE \"public\".\"job\" ADD COLUMN \"lastAdminAction\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"lastAdminAction\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "job",
+          "lastAdminAction"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.job.lastAdminActionAt",
+    "label": "Add column \"lastAdminActionAt\" to \"job\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "lastAdminActionAt",
+        "table": "job"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"lastAdminActionAt\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "job",
+          "lastAdminActionAt"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"lastAdminActionAt\"",
+        "sql": "ALTER TABLE \"public\".\"job\" ADD COLUMN \"lastAdminActionAt\" timestamptz"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"lastAdminActionAt\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "job",
+          "lastAdminActionAt"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.job.lastAdminActionById",
+    "label": "Add column \"lastAdminActionById\" to \"job\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "lastAdminActionById",
+        "table": "job"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"lastAdminActionById\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "job",
+          "lastAdminActionById"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"lastAdminActionById\"",
+        "sql": "ALTER TABLE \"public\".\"job\" ADD COLUMN \"lastAdminActionById\" uuid"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"lastAdminActionById\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "job",
+          "lastAdminActionById"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.job.lastAdminActionNote",
+    "label": "Add column \"lastAdminActionNote\" to \"job\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "lastAdminActionNote",
+        "table": "job"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"lastAdminActionNote\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "job",
+          "lastAdminActionNote"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"lastAdminActionNote\"",
+        "sql": "ALTER TABLE \"public\".\"job\" ADD COLUMN \"lastAdminActionNote\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"lastAdminActionNote\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "job",
+          "lastAdminActionNote"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.job.version",
+    "label": "Add column \"version\" to \"job\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "version",
+        "table": "job"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"version\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "job",
+          "version"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"version\"",
+        "sql": "ALTER TABLE \"public\".\"job\" ADD COLUMN \"version\" int4 DEFAULT 0 NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"version\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "job",
+          "version"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.job.job_lastAdminAction_check_adadbbbb",
+    "label": "Add check constraint \"job_lastAdminAction_check_adadbbbb\" on \"job\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "job_lastAdminAction_check_adadbbbb",
+        "table": "job"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"job_lastAdminAction_check_adadbbbb\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "job_lastAdminAction_check_adadbbbb",
+          "public",
+          "\"public\".\"job\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"job_lastAdminAction_check_adadbbbb\"",
+        "sql": "ALTER TABLE \"public\".\"job\" ADD CONSTRAINT \"job_lastAdminAction_check_adadbbbb\" CHECK (\"lastAdminAction\" IN ('CREATE', 'EDIT', 'PUBLISH', 'REJECT', 'CLOSE', 'REOPEN', 'DELETE', 'RESTORE'))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"job_lastAdminAction_check_adadbbbb\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "job_lastAdminAction_check_adadbbbb",
+          "public",
+          "\"public\".\"job\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.job.job_version_nonnegative_ec05e13a",
+    "label": "Add check constraint \"job_version_nonnegative_ec05e13a\" on \"job\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "job_version_nonnegative_ec05e13a",
+        "table": "job"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"job_version_nonnegative_ec05e13a\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "job_version_nonnegative_ec05e13a",
+          "public",
+          "\"public\".\"job\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"job_version_nonnegative_ec05e13a\"",
+        "sql": "ALTER TABLE \"public\".\"job\" ADD CONSTRAINT \"job_version_nonnegative_ec05e13a\" CHECK (version >= 0)"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"job_version_nonnegative_ec05e13a\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "job_version_nonnegative_ec05e13a",
+          "public",
+          "\"public\".\"job\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.job.job_deletedAt_status_createdAt_idx_87357d33",
+    "label": "Create index \"job_deletedAt_status_createdAt_idx_87357d33\" on \"job\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "job_deletedAt_status_createdAt_idx_87357d33",
+        "table": "job"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"job_deletedAt_status_createdAt_idx_87357d33\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"job_deletedAt_status_createdAt_idx_87357d33\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"job_deletedAt_status_createdAt_idx_87357d33\"",
+        "sql": "CREATE INDEX \"job_deletedAt_status_createdAt_idx_87357d33\" ON \"public\".\"job\" (\"deletedAt\", \"status\", \"createdAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"job_deletedAt_status_createdAt_idx_87357d33\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"job_deletedAt_status_createdAt_idx_87357d33\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.job.job_lastAdminActionById_idx_b9d717c8",
+    "label": "Create index \"job_lastAdminActionById_idx_b9d717c8\" on \"job\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "job_lastAdminActionById_idx_b9d717c8",
+        "table": "job"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"job_lastAdminActionById_idx_b9d717c8\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"job_lastAdminActionById_idx_b9d717c8\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"job_lastAdminActionById_idx_b9d717c8\"",
+        "sql": "CREATE INDEX \"job_lastAdminActionById_idx_b9d717c8\" ON \"public\".\"job\" (\"lastAdminActionById\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"job_lastAdminActionById_idx_b9d717c8\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"job_lastAdminActionById_idx_b9d717c8\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.job.job_last_admin_action_by_fkey",
+    "label": "Add foreign key \"job_last_admin_action_by_fkey\" on \"job\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "job_last_admin_action_by_fkey",
+        "table": "job"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"job_last_admin_action_by_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "job_last_admin_action_by_fkey",
+          "public",
+          "\"public\".\"job\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"job_last_admin_action_by_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"job\"\nADD CONSTRAINT \"job_last_admin_action_by_fkey\"\nFOREIGN KEY (\"lastAdminActionById\")\nREFERENCES \"public\".\"user\" (\"id\")\nON DELETE SET NULL\nON UPDATE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"job_last_admin_action_by_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "job_last_admin_action_by_fkey",
+          "public",
+          "\"public\".\"job\""
+        ]
+      }
+    ]
+  }
+]

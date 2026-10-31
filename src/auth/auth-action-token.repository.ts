@@ -64,6 +64,9 @@ class PrismaAuthActionTokenStore implements AuthActionTokenStore {
   }
 
   async revokeUserSessions(userId: string, revokedAt: string): Promise<void> {
+    await this.prisma.AdminChallenge.where({ userId })
+      .where((c) => c.consumedAt.isNull())
+      .updateAndCount({ consumedAt: revokedAt, secretCiphertext: null });
     await this.prisma.AuthSession.where({ userId })
       .where((session) => session.revokedAt.isNull())
       .updateAndCount({
@@ -101,8 +104,13 @@ export class AuthActionTokenRepository extends PrismaAuthActionTokenStore {
   transaction<TResult>(
     operation: (tokens: AuthActionTokenStore) => Promise<TResult>,
   ): Promise<TResult> {
-    return db.transaction((transaction) =>
-      operation(new PrismaAuthActionTokenStore(transaction.orm.public)),
-    );
+    return db.transaction(async (transaction) => {
+      await transaction.query(
+        db.raw.sql`SELECT pg_advisory_xact_lock(1846532101)::text AS locked`
+          .returnsRow({ locked: 'pg/text@1' })
+          .build(),
+      );
+      return operation(new PrismaAuthActionTokenStore(transaction.orm.public));
+    });
   }
 }

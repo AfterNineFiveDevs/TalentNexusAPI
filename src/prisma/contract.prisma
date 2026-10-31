@@ -52,6 +52,9 @@ model AuthSession {
   lastRotatedAt      TimestamptzString        @default(now())
   revokedAt          TimestamptzString?
   revocationReason   SessionRevocationReason?
+  purpose            String                   @default("USER")
+  mfaVerifiedAt      TimestamptzString?
+  absoluteExpiresAt  TimestamptzString?
   createdAt          TimestamptzString        @default(now())
   updatedAt          temporal.updatedAtString()
 
@@ -93,6 +96,15 @@ model Job {
 
   status         JobStatus @default(PENDING)
 
+  version             Int @default(0)
+  adminEditedAt       TimestamptzString?
+  deletedAt           TimestamptzString?
+  lastAdminAction     JobAdminAction?
+  lastAdminActionById Uuid?
+  lastAdminActionBy   User? @relation(fields: [lastAdminActionById], references: [id], onDelete: SetNull, onUpdate: Cascade, map: "job_last_admin_action_by_fkey")
+  lastAdminActionAt   TimestamptzString?
+  lastAdminActionNote String?
+
   reviewedById   Uuid?
   reviewedBy     User?     @relation(fields: [reviewedById], references: [id], onDelete: SetNull, onUpdate: Cascade)
   reviewedAt     TimestamptzString?
@@ -106,6 +118,21 @@ model Job {
 
   @@unique([sourceId, externalId])
   @@index([status, publishedAt])
+  @@index([deletedAt, status, createdAt])
+  @@check(expression: "version >= 0", name: "job_version_nonnegative")
+}
+
+enum JobAdminAction {
+  @@type("pg/text@1")
+
+  CREATE
+  EDIT
+  PUBLISH
+  REJECT
+  CLOSE
+  REOPEN
+  DELETE
+  RESTORE
 }
 
 enum Role {
@@ -152,4 +179,56 @@ enum JobStatus {
   PUBLISHED
   REJECTED
   CLOSED
+}
+
+model AdminMembership {
+  userId Uuid @id
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  originalRole Role @default(TALENT)
+  state String @default("ONBOARDING")
+  secretCiphertext String?
+  lastTotpStep Int @default(0)
+  createdAt TimestamptzString @default(now())
+  updatedAt temporal.updatedAtString()
+  @@check(expression: "state IN ('ONBOARDING', 'ACTIVE', 'DISABLED')", name: "admin_membership_state")
+}
+model AdminInvitation {
+  id Uuid @id @default(uuid())
+  email String @unique
+  name String
+  tokenHash String @unique
+  state String @default("PENDING")
+  userId Uuid?
+  createdById Uuid?
+  expiresAt TimestamptzString
+  lastSentAt TimestamptzString @default(now())
+  createdAt TimestamptzString @default(now())
+  @@check(expression: "state IN ('PENDING', 'ONBOARDING', 'ACCEPTED', 'REVOKED')", name: "admin_invitation_state")
+}
+model AdminChallenge {
+  id Uuid @id @default(uuid())
+  tokenHash String @unique
+  userId Uuid
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  purpose String
+  attempts Int @default(0)
+  secretCiphertext String?
+  expiresAt TimestamptzString
+  consumedAt TimestamptzString?
+  createdAt TimestamptzString @default(now())
+  @@index([userId])
+  @@check(expression: "purpose IN ('ENROLL', 'VERIFY')", name: "admin_challenge_purpose")
+}
+model AdminRecoveryCode {
+  id Uuid @id @default(uuid())
+  userId Uuid
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  codeHash String @unique
+  consumedAt TimestamptzString?
+  @@index([userId])
+}
+model AdminAuthAttempt {
+  key String @id
+  attempts Int @default(0)
+  windowStartedAt TimestamptzString @default(now())
 }

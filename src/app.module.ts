@@ -1,3 +1,4 @@
+import { AdminAuthModule } from './admin-auth/admin-auth.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
@@ -11,6 +12,7 @@ import { HealthModule } from './health/health.module';
 import { PrismaLifecycleService } from './prisma/prisma-lifecycle.service';
 import { UsersModule } from './users/users.module';
 import { IngestionModule } from './ingestion/ingestion.module.js';
+import { JobsModule } from './jobs/jobs.module';
 
 @Module({
   imports: [
@@ -19,6 +21,7 @@ import { IngestionModule } from './ingestion/ingestion.module.js';
       cache: true,
       validate: validateEnvironment,
     }),
+    AdminAuthModule,
     AuthModule,
     UsersModule,
     HealthModule,
@@ -31,6 +34,7 @@ import { IngestionModule } from './ingestion/ingestion.module.js';
       ],
     }),
     IngestionModule,
+    JobsModule,
   ],
   controllers: [AppController],
   providers: [

@@ -1,0 +1,695 @@
+[
+  {
+    "id": "table.adminAuthAttempt",
+    "label": "Create table \"adminAuthAttempt\"",
+    "summary": "Creates table \"adminAuthAttempt\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "adminAuthAttempt"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"adminAuthAttempt\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"adminAuthAttempt\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"adminAuthAttempt\"",
+        "sql": "CREATE TABLE \"public\".\"adminAuthAttempt\" (\n  \"attempts\" int4 DEFAULT 0 NOT NULL,\n  \"key\" text NOT NULL,\n  \"windowStartedAt\" timestamptz DEFAULT (now()) NOT NULL,\n  PRIMARY KEY (\"key\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"adminAuthAttempt\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"adminAuthAttempt\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.adminChallenge",
+    "label": "Create table \"adminChallenge\"",
+    "summary": "Creates table \"adminChallenge\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "adminChallenge"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"adminChallenge\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"adminChallenge\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"adminChallenge\"",
+        "sql": "CREATE TABLE \"public\".\"adminChallenge\" (\n  \"attempts\" int4 DEFAULT 0 NOT NULL,\n  \"consumedAt\" timestamptz,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"expiresAt\" timestamptz NOT NULL,\n  \"id\" uuid NOT NULL,\n  \"purpose\" text NOT NULL,\n  \"secretCiphertext\" text,\n  \"tokenHash\" text NOT NULL,\n  \"userId\" uuid NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"admin_challenge_purpose_3a593c12\" CHECK (purpose IN ('ENROLL', 'VERIFY'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"adminChallenge\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"adminChallenge\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.adminInvitation",
+    "label": "Create table \"adminInvitation\"",
+    "summary": "Creates table \"adminInvitation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "adminInvitation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"adminInvitation\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"adminInvitation\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"adminInvitation\"",
+        "sql": "CREATE TABLE \"public\".\"adminInvitation\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"createdById\" uuid,\n  \"email\" text NOT NULL,\n  \"expiresAt\" timestamptz NOT NULL,\n  \"id\" uuid NOT NULL,\n  \"lastSentAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"name\" text NOT NULL,\n  \"state\" text DEFAULT 'PENDING' NOT NULL,\n  \"tokenHash\" text NOT NULL,\n  \"userId\" uuid,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"admin_invitation_state_9222fa24\" CHECK (state IN ('PENDING', 'ONBOARDING', 'ACCEPTED', 'REVOKED'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"adminInvitation\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"adminInvitation\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.adminMembership",
+    "label": "Create table \"adminMembership\"",
+    "summary": "Creates table \"adminMembership\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "adminMembership"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"adminMembership\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"adminMembership\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"adminMembership\"",
+        "sql": "CREATE TABLE \"public\".\"adminMembership\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"lastTotpStep\" int4 DEFAULT 0 NOT NULL,\n  \"originalRole\" text DEFAULT 'TALENT' NOT NULL,\n  \"secretCiphertext\" text,\n  \"state\" text DEFAULT 'ONBOARDING' NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  \"userId\" uuid NOT NULL,\n  PRIMARY KEY (\"userId\"),\n  CONSTRAINT \"adminMembership_originalRole_check_8c8390d7\" CHECK (\"originalRole\" IN ('TALENT', 'RECRUITER', 'ADMIN')),\n  CONSTRAINT \"admin_membership_state_50c5a64c\" CHECK (state IN ('ONBOARDING', 'ACTIVE', 'DISABLED'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"adminMembership\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"adminMembership\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.adminRecoveryCode",
+    "label": "Create table \"adminRecoveryCode\"",
+    "summary": "Creates table \"adminRecoveryCode\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "adminRecoveryCode"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"adminRecoveryCode\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"adminRecoveryCode\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"adminRecoveryCode\"",
+        "sql": "CREATE TABLE \"public\".\"adminRecoveryCode\" (\n  \"codeHash\" text NOT NULL,\n  \"consumedAt\" timestamptz,\n  \"id\" uuid NOT NULL,\n  \"userId\" uuid NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"adminRecoveryCode\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"adminRecoveryCode\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.authSession.absoluteExpiresAt",
+    "label": "Add column \"absoluteExpiresAt\" to \"authSession\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "absoluteExpiresAt",
+        "table": "authSession"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"absoluteExpiresAt\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "authSession",
+          "absoluteExpiresAt"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"absoluteExpiresAt\"",
+        "sql": "ALTER TABLE \"public\".\"authSession\" ADD COLUMN \"absoluteExpiresAt\" timestamptz"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"absoluteExpiresAt\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "authSession",
+          "absoluteExpiresAt"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.authSession.mfaVerifiedAt",
+    "label": "Add column \"mfaVerifiedAt\" to \"authSession\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "mfaVerifiedAt",
+        "table": "authSession"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"mfaVerifiedAt\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "authSession",
+          "mfaVerifiedAt"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"mfaVerifiedAt\"",
+        "sql": "ALTER TABLE \"public\".\"authSession\" ADD COLUMN \"mfaVerifiedAt\" timestamptz"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"mfaVerifiedAt\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "authSession",
+          "mfaVerifiedAt"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.authSession.purpose",
+    "label": "Add column \"purpose\" to \"authSession\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "purpose",
+        "table": "authSession"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"purpose\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "authSession",
+          "purpose"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"purpose\"",
+        "sql": "ALTER TABLE \"public\".\"authSession\" ADD COLUMN \"purpose\" text DEFAULT 'USER' NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"purpose\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "authSession",
+          "purpose"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.adminChallenge.adminChallenge_tokenHash_key",
+    "label": "Add unique constraint on \"adminChallenge\" (tokenHash)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "adminChallenge_tokenHash_key",
+        "table": "adminChallenge"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"adminChallenge_tokenHash_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "adminChallenge_tokenHash_key",
+          "public",
+          "\"public\".\"adminChallenge\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"adminChallenge_tokenHash_key\"",
+        "sql": "ALTER TABLE \"public\".\"adminChallenge\" ADD CONSTRAINT \"adminChallenge_tokenHash_key\" UNIQUE (\"tokenHash\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"adminChallenge_tokenHash_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "adminChallenge_tokenHash_key",
+          "public",
+          "\"public\".\"adminChallenge\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.adminInvitation.adminInvitation_email_key",
+    "label": "Add unique constraint on \"adminInvitation\" (email)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "adminInvitation_email_key",
+        "table": "adminInvitation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"adminInvitation_email_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "adminInvitation_email_key",
+          "public",
+          "\"public\".\"adminInvitation\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"adminInvitation_email_key\"",
+        "sql": "ALTER TABLE \"public\".\"adminInvitation\" ADD CONSTRAINT \"adminInvitation_email_key\" UNIQUE (\"email\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"adminInvitation_email_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "adminInvitation_email_key",
+          "public",
+          "\"public\".\"adminInvitation\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.adminInvitation.adminInvitation_tokenHash_key",
+    "label": "Add unique constraint on \"adminInvitation\" (tokenHash)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "adminInvitation_tokenHash_key",
+        "table": "adminInvitation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"adminInvitation_tokenHash_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "adminInvitation_tokenHash_key",
+          "public",
+          "\"public\".\"adminInvitation\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"adminInvitation_tokenHash_key\"",
+        "sql": "ALTER TABLE \"public\".\"adminInvitation\" ADD CONSTRAINT \"adminInvitation_tokenHash_key\" UNIQUE (\"tokenHash\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"adminInvitation_tokenHash_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "adminInvitation_tokenHash_key",
+          "public",
+          "\"public\".\"adminInvitation\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.adminRecoveryCode.adminRecoveryCode_codeHash_key",
+    "label": "Add unique constraint on \"adminRecoveryCode\" (codeHash)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "adminRecoveryCode_codeHash_key",
+        "table": "adminRecoveryCode"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"adminRecoveryCode_codeHash_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "adminRecoveryCode_codeHash_key",
+          "public",
+          "\"public\".\"adminRecoveryCode\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"adminRecoveryCode_codeHash_key\"",
+        "sql": "ALTER TABLE \"public\".\"adminRecoveryCode\" ADD CONSTRAINT \"adminRecoveryCode_codeHash_key\" UNIQUE (\"codeHash\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"adminRecoveryCode_codeHash_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "adminRecoveryCode_codeHash_key",
+          "public",
+          "\"public\".\"adminRecoveryCode\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.adminChallenge.adminChallenge_userId_idx_a489d58a",
+    "label": "Create index \"adminChallenge_userId_idx_a489d58a\" on \"adminChallenge\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "adminChallenge_userId_idx_a489d58a",
+        "table": "adminChallenge"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"adminChallenge_userId_idx_a489d58a\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"adminChallenge_userId_idx_a489d58a\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"adminChallenge_userId_idx_a489d58a\"",
+        "sql": "CREATE INDEX \"adminChallenge_userId_idx_a489d58a\" ON \"public\".\"adminChallenge\" (\"userId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"adminChallenge_userId_idx_a489d58a\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"adminChallenge_userId_idx_a489d58a\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.adminRecoveryCode.adminRecoveryCode_userId_idx_a489d58a",
+    "label": "Create index \"adminRecoveryCode_userId_idx_a489d58a\" on \"adminRecoveryCode\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "adminRecoveryCode_userId_idx_a489d58a",
+        "table": "adminRecoveryCode"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"adminRecoveryCode_userId_idx_a489d58a\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"adminRecoveryCode_userId_idx_a489d58a\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"adminRecoveryCode_userId_idx_a489d58a\"",
+        "sql": "CREATE INDEX \"adminRecoveryCode_userId_idx_a489d58a\" ON \"public\".\"adminRecoveryCode\" (\"userId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"adminRecoveryCode_userId_idx_a489d58a\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"adminRecoveryCode_userId_idx_a489d58a\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.adminChallenge.adminChallenge_userId_fkey",
+    "label": "Add foreign key \"adminChallenge_userId_fkey\" on \"adminChallenge\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "adminChallenge_userId_fkey",
+        "table": "adminChallenge"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"adminChallenge_userId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "adminChallenge_userId_fkey",
+          "public",
+          "\"public\".\"adminChallenge\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"adminChallenge_userId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"adminChallenge\"\nADD CONSTRAINT \"adminChallenge_userId_fkey\"\nFOREIGN KEY (\"userId\")\nREFERENCES \"public\".\"user\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"adminChallenge_userId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "adminChallenge_userId_fkey",
+          "public",
+          "\"public\".\"adminChallenge\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.adminMembership.adminMembership_userId_fkey",
+    "label": "Add foreign key \"adminMembership_userId_fkey\" on \"adminMembership\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "adminMembership_userId_fkey",
+        "table": "adminMembership"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"adminMembership_userId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "adminMembership_userId_fkey",
+          "public",
+          "\"public\".\"adminMembership\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"adminMembership_userId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"adminMembership\"\nADD CONSTRAINT \"adminMembership_userId_fkey\"\nFOREIGN KEY (\"userId\")\nREFERENCES \"public\".\"user\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"adminMembership_userId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "adminMembership_userId_fkey",
+          "public",
+          "\"public\".\"adminMembership\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.adminRecoveryCode.adminRecoveryCode_userId_fkey",
+    "label": "Add foreign key \"adminRecoveryCode_userId_fkey\" on \"adminRecoveryCode\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "adminRecoveryCode_userId_fkey",
+        "table": "adminRecoveryCode"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"adminRecoveryCode_userId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "adminRecoveryCode_userId_fkey",
+          "public",
+          "\"public\".\"adminRecoveryCode\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"adminRecoveryCode_userId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"adminRecoveryCode\"\nADD CONSTRAINT \"adminRecoveryCode_userId_fkey\"\nFOREIGN KEY (\"userId\")\nREFERENCES \"public\".\"user\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"adminRecoveryCode_userId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "adminRecoveryCode_userId_fkey",
+          "public",
+          "\"public\".\"adminRecoveryCode\""
+        ]
+      }
+    ]
+  }
+]

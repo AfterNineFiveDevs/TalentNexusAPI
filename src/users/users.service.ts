@@ -7,6 +7,9 @@ import { UserRepository } from './users.repository';
 
 @Injectable()
 export class UsersService {
+  listSafe() {
+    return this.userRepository.listSafe();
+  }
   constructor(private readonly userRepository: UserRepository) {}
 
   async create(user: SignUpRequest) {
@@ -18,11 +21,7 @@ export class UsersService {
       });
     }
 
-    try {
-      return await this.userRepository.createUser(user);
-    } catch (error) {
-      throw error;
-    }
+    return this.userRepository.createUser(user);
   }
 
   async findOne(email: string) {

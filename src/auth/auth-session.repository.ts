@@ -5,6 +5,7 @@ type SessionRevocationReason = 'LOGOUT' | 'LOGOUT_ALL' | 'TOKEN_REUSE';
 
 export interface StoredAuthSession {
   id: string;
+  purpose?: string;
   refreshTokenHash: string;
   expiresAt: string;
   revokedAt: string | null;
@@ -110,11 +111,18 @@ export class AuthSessionRepository extends PrismaAuthSessionStore {
   }
 
   async revokeAll(userId: string, now: string): Promise<void> {
-    await db.orm.public.AuthSession.where({ userId })
-      .where((session) => session.revokedAt.isNull())
-      .updateAndCount({
-        revokedAt: now,
-        revocationReason: 'LOGOUT_ALL',
-      });
+    await db.transaction(async (tx) => {
+      await tx.query(
+        db.raw.sql`SELECT pg_advisory_xact_lock(1846532101)::text AS locked`
+          .returnsRow({ locked: 'pg/text@1' })
+          .build(),
+      );
+      await tx.orm.public.AuthSession.where({ userId })
+        .where((s) => s.revokedAt.isNull())
+        .updateAndCount({ revokedAt: now, revocationReason: 'LOGOUT_ALL' });
+      await tx.orm.public.AdminChallenge.where({ userId })
+        .where((c) => c.consumedAt.isNull())
+        .updateAndCount({ consumedAt: now, secretCiphertext: null });
+    });
   }
 }

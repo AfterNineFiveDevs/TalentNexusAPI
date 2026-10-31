@@ -1,0 +1,7 @@
+simulation: admin-email
+routing: path
+mocks:
+  - name: brevo
+    routeKey: brevo
+    origin: api.brevo.com
+    path: postman/mocks/brevo

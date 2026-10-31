@@ -125,7 +125,7 @@ export class RefreshTokenService {
     },
   ): Promise<RotateSessionResult> {
     const session = await sessions.findByIdWithUser(input.id);
-    if (!session) {
+    if (!session || session.purpose === 'ADMIN') {
       return { status: 'invalid' };
     }
 

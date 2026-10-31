@@ -13,6 +13,12 @@ export class UserRepository {
     this.prisma = db.orm.public;
   }
 
+  listSafe() {
+    return this.prisma.User.select('id', 'email', 'name', 'role', 'createdAt')
+      .limit(100)
+      .all();
+  }
+
   async findByEmail(email: string) {
     return await this.prisma.User.where((u) => u.email.eq(email)).first();
   }

@@ -1,0 +1,23 @@
+purpose:
+  stands_in_for: Brevo transactional invitation email API
+  unblocks: Local backend invitation success/failure checks without sending real mail
+assumptions:
+  - id: email-acceptance
+    status: supported
+    claim: Brevo accepts transactional sends at POST /v3/smtp/email with sender, to, subject and htmlContent and returns a messageId.
+    reason: The official provider reference documents this request and response. This does not establish inbox delivery.
+    verification: Read the official endpoint reference on 2026-11-01. Local integration results are recorded in docs/admin-auth.md after execution.
+    source: https://developers.brevo.com/reference/send-transac-email
+    updated_at: '2026-11-01'
+  - id: failed-invitation-cleanup
+    status: supported
+    claim: The backend revokes the invitation when the provider rejects the send.
+    reason: The isolated HTTP test observes 503 and a REVOKED invitation after a simulated provider rejection, followed by a successful retry with a new invitation.
+    verification: 'On 2026-11-01, the full isolated suite passed 44 HTTP/PostgreSQL tests against the local Postman simulation, whose log recorded 100 HTTP requests including capture controls. Delivery-failure test asserts persisted revocation; real provider delivery remains unverified.'
+    source: src/admin-auth/admin-auth.service.ts; test/admin-auth.integration-spec.ts
+    updated_at: '2026-11-01'
+fingerprints:
+  - id: initial
+    date: '2026-11-01'
+    commit: uncommitted implementation
+    cli: '1.83.1'

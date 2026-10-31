@@ -172,3 +172,10 @@ The shared database client is closed during graceful application shutdown.
 4. Configure the platform's liveness probe for `/api/v1/health/live` and its
    readiness probe for `/api/v1/health/ready`.
 5. Terminate TLS at the edge and route only healthy instances to traffic.
+
+## Administrator authentication
+
+See [admin authentication](docs/admin-auth.md) for invitation-only enrollment,
+mandatory MFA, session lifecycle, access management and operator commands.
+`ADMIN_MFA_ENCRYPTION_KEY` is now required at startup. Admin routes require an
+active MFA session; ordinary ADMIN-role access tokens are insufficient.

@@ -30,6 +30,17 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException(API_ERROR_MESSAGES.JWT_INVALID);
     }
 
-    return result.data;
+    const adminSessionId =
+      claims.aud === 'talentnexus-admin' &&
+      Array.isArray(claims.amr) &&
+      claims.amr.includes('pwd') &&
+      claims.amr.includes('mfa') &&
+      typeof claims.sid === 'string' &&
+      /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+        claims.sid,
+      )
+        ? claims.sid
+        : undefined;
+    return { ...result.data, ...(adminSessionId ? { adminSessionId } : {}) };
   }
 }

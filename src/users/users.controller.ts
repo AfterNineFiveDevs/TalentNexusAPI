@@ -1,16 +1,15 @@
-import { Controller, Get } from '@nestjs/common';
-import { Public } from 'src/@decorators/public.decorator';
-import { db } from 'src/prisma/db';
+import { Controller, Get, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { AdminGuard } from '../auth/admin.guard';
 import { UsersService } from './users.service';
-
+@ApiTags('Users')
+@ApiBearerAuth()
+@UseGuards(AdminGuard)
 @Controller('users')
 export class UsersController {
-  constructor(private readonly userService: UsersService) {}
-
+  constructor(private readonly users: UsersService) {}
   @Get()
-  @Public()
-  getAllUSer() {
-    const prisma = db.orm.public;
-    return prisma.User.all();
+  getAllUser() {
+    return this.users.listSafe();
   }
 }

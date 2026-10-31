@@ -22,6 +22,18 @@ const rawEnvironmentSchema = z.object({
   DATABASE_URL: z.url(),
   JWT_SECRET: z.string().min(1),
   JWT_EXPIRES_IN: z.string().trim().min(1),
+  ADMIN_APP_URL: z.url().default('http://localhost:3001'),
+  ADMIN_REFRESH_COOKIE_NAME: z
+    .string()
+    .regex(/^[A-Za-z0-9_]+$/)
+    .default('talent_nexus_admin_refresh'),
+  ADMIN_MFA_ENCRYPTION_KEY: z
+    .string()
+    .regex(
+      /^[A-Za-z0-9+/]{43}=$/,
+      'Must be a base64-encoded 32-byte encryption key',
+    ),
+  BREVO_API_URL: z.url().default('https://api.brevo.com/v3'),
   GOOGLE_CLIENT_IDS: z
     .string()
     .trim()
@@ -64,6 +76,29 @@ const rawEnvironmentSchema = z.object({
 
 export const environmentSchema = rawEnvironmentSchema.superRefine(
   (environment, context) => {
+    if (
+      (environment.ENVIRONMENT === 'staging' ||
+        environment.ENVIRONMENT === 'production') &&
+      (!environment.ADMIN_APP_URL.startsWith('https://') ||
+        environment.BREVO_API_URL !== 'https://api.brevo.com/v3')
+    ) {
+      context.addIssue({
+        code: 'custom',
+        path: ['ADMIN_APP_URL'],
+        message:
+          'Admin URL must use HTTPS and Brevo must use its production endpoint',
+      });
+    }
+    if (
+      environment.ADMIN_REFRESH_COOKIE_NAME ===
+      environment.REFRESH_TOKEN_COOKIE_NAME
+    ) {
+      context.addIssue({
+        code: 'custom',
+        path: ['ADMIN_REFRESH_COOKIE_NAME'],
+        message: 'Admin and ordinary cookie names must differ',
+      });
+    }
     if (
       environment.ENVIRONMENT !== 'development' &&
       environment.ENVIRONMENT !== 'test' &&
