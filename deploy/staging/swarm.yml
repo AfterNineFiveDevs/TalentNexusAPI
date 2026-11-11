@@ -1,0 +1,88 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: '${NGINX_IMAGE:-nginx:stable-alpine}'
+    ports:
+      - target: 443
+        published: 8443
+        protocol: tcp
+        mode: ingress
+    networks:
+      - backend
+    configs:
+      - source: nginx_conf
+        target: /etc/nginx/conf.d/default.conf
+    secrets:
+      - source: tls_fullchain
+        target: tls-fullchain.pem
+      - source: tls_key
+        target: tls-privkey.pem
+        mode: 0400
+
+  api:
+    image: '${API_IMAGE:?Set API_IMAGE to the pushed API image}'
+    environment:
+      ENVIRONMENT: staging
+      NODE_ENV: production
+      PORT: '8000'
+      GRPC_URL: '0.0.0.0:50051'
+    networks:
+      - backend
+    secrets:
+      - source: api_env
+        target: /app/.env
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:8000/api/health/live', {signal: AbortSignal.timeout(3000)}).then(r => process.exit(r.ok ? 0 : 1), () => process.exit(1))"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  crawler:
+    image: '${CRAWLER_IMAGE:?Set CRAWLER_IMAGE to the pushed crawler image}'
+    environment:
+      ENVIRONMENT: staging
+      NODE_ENV: production
+      API_GRPC_URL: 'api:50051'
+      GRPC_PRIVATE_NETWORK: 'true'
+      GRPC_TLS: 'false'
+    networks:
+      - backend
+    secrets:
+      - source: crawler_env
+        target: /app/.env
+    stop_grace_period: 30s
+    deploy:
+      replicas: 1
+      update_config:
+        order: stop-first
+
+networks:
+  backend:
+    driver: overlay
+    driver_opts:
+      encrypted: 'true'
+
+configs:
+  nginx_conf:
+    name: '${NGINX_CONFIG_NAME:-talentnexus-staging-nginx-v2}'
+    file: ./nginx.conf
+
+secrets:
+  api_env:
+    external: true
+    name: '${API_ENV_SECRET:-talentnexus-staging-api-env-v1}'
+  crawler_env:
+    external: true
+    name: '${CRAWLER_ENV_SECRET:-talentnexus-staging-crawler-env-v1}'
+  tls_fullchain:
+    external: true
+    name: '${TLS_FULLCHAIN_SECRET:-talentnexus-staging-tls-fullchain-v1}'
+  tls_key:
+    external: true
+    name: '${TLS_KEY_SECRET:-talentnexus-staging-tls-key-v1}'

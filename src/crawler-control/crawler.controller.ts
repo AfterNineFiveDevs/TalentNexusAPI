@@ -66,6 +66,7 @@ export class AdminCrawlerController {
     return this.crawler.detail(params.sourceId);
   }
   @Patch(':sourceId')
+  @ApiParam({ name: 'sourceId', enum: ['myjobs'] })
   @ApiBody({ type: UpdateCrawlerSourceDto })
   @ApiResponse({ status: 200, schema: detailSchema(crawlerSourceSchema) })
   update(
@@ -75,6 +76,7 @@ export class AdminCrawlerController {
     return this.crawler.update(params.sourceId, body);
   }
   @Post(':sourceId/run')
+  @ApiParam({ name: 'sourceId', enum: ['myjobs'] })
   @HttpCode(202)
   @ApiBody({ schema: { type: 'object', additionalProperties: false } })
   @ApiResponse({ status: 202, schema: detailSchema(crawlerRunSchema) })
@@ -86,6 +88,7 @@ export class AdminCrawlerController {
     return this.crawler.manual(params.sourceId);
   }
   @Get(':sourceId/runs')
+  @ApiParam({ name: 'sourceId', enum: ['myjobs'] })
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiResponse({ status: 200, schema: pageSchema(crawlerRunSchema) })
@@ -96,6 +99,7 @@ export class AdminCrawlerController {
     return this.crawler.runs(params.sourceId, query);
   }
   @Get(':sourceId/runs/:runId')
+  @ApiParam({ name: 'sourceId', enum: ['myjobs'] })
   @ApiParam({ name: 'runId', format: 'uuid' })
   @ApiResponse({ status: 200, schema: detailSchema(crawlerRunSchema) })
   run(@Param() params: CrawlerRunParamsDto) {

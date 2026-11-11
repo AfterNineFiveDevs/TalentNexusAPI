@@ -27,6 +27,10 @@ const rawEnvironmentSchema = z.object({
     .max(7_200_000)
     .default(1_800_000),
   ENVIRONMENT: z.enum(environments).default('development'),
+  STAGING_ALLOW_LOCALHOST: z
+    .enum(['true', 'false'])
+    .default('false')
+    .transform((value) => value === 'true'),
   PORT: z.coerce.number().int().min(1).max(65_535).default(8000),
   DATABASE_URL: z.url(),
   JWT_SECRET: z.string().min(1),
@@ -83,8 +87,23 @@ const rawEnvironmentSchema = z.object({
   LOG_LEVEL: z.enum(logLevels).default('log'),
 });
 
+function isLoopbackHttpUrl(value: string): boolean {
+  const url = URL.parse(value);
+  return (
+    url?.protocol === 'http:' &&
+    ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname)
+  );
+}
+
 export const environmentSchema = rawEnvironmentSchema.superRefine(
   (environment, context) => {
+    const hosted =
+      environment.ENVIRONMENT === 'staging' ||
+      environment.ENVIRONMENT === 'production';
+    const allowLoopback =
+      environment.ENVIRONMENT === 'staging' &&
+      environment.STAGING_ALLOW_LOCALHOST;
+
     if (
       Boolean(environment.GRPC_TLS_CERT_PATH) !==
       Boolean(environment.GRPC_TLS_KEY_PATH)
@@ -94,17 +113,29 @@ export const environmentSchema = rawEnvironmentSchema.superRefine(
         message: 'Set both gRPC TLS certificate and key paths',
         path: ['GRPC_TLS_CERT_PATH'],
       });
-    if (
-      (environment.ENVIRONMENT === 'staging' ||
-        environment.ENVIRONMENT === 'production') &&
-      (!environment.ADMIN_APP_URL.startsWith('https://') ||
-        environment.BREVO_API_URL !== 'https://api.brevo.com/v3')
-    ) {
+    if (hosted) {
+      for (const field of ['ADMIN_APP_URL', 'WEB_APP_URL'] as const) {
+        const url = environment[field];
+        if (
+          url.startsWith('https://') ||
+          (allowLoopback && isLoopbackHttpUrl(url))
+        ) {
+          continue;
+        }
+        context.addIssue({
+          code: 'custom',
+          path: [field],
+          message: allowLoopback
+            ? `${field} must use HTTPS or a loopback HTTP URL`
+            : `${field} must use HTTPS`,
+        });
+      }
+    }
+    if (hosted && environment.BREVO_API_URL !== 'https://api.brevo.com/v3') {
       context.addIssue({
         code: 'custom',
-        path: ['ADMIN_APP_URL'],
-        message:
-          'Admin URL must use HTTPS and Brevo must use its production endpoint',
+        path: ['BREVO_API_URL'],
+        message: 'Brevo must use its production endpoint',
       });
     }
     if (
@@ -184,18 +215,6 @@ export const environmentSchema = rawEnvironmentSchema.superRefine(
           message: 'MAIL_FROM_EMAIL is required when EMAIL_PROVIDER is brevo',
         });
       }
-    }
-
-    if (
-      (environment.ENVIRONMENT === 'staging' ||
-        environment.ENVIRONMENT === 'production') &&
-      !environment.WEB_APP_URL.startsWith('https://')
-    ) {
-      context.addIssue({
-        code: 'custom',
-        path: ['WEB_APP_URL'],
-        message: 'WEB_APP_URL must use HTTPS in staging and production',
-      });
     }
   },
 );
