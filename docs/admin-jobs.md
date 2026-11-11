@@ -1,3 +1,6 @@
+> Category assignment, queue summary/source filters and first-publication analytics
+> are documented in [the dashboard API guide](admin-dashboard.md).
+
 > Admin authorization now requires an active MFA-authenticated admin session.
 > Ordinary login/Google/legacy role-only tokens are rejected. See
 > [admin authentication](admin-auth.md) for sign-in and enrollment.

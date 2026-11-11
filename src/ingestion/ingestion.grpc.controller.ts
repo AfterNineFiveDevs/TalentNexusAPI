@@ -1,32 +1,76 @@
-import { Controller, Logger } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
+import { Metadata, status } from '@grpc/grpc-js';
 import type {
   IngestJobsRequestType,
-  IngestJobsResponseType,
+  WorkerRequestType,
 } from '@talent-nexus/contracts/grpc';
-import { Public } from 'src/@decorators/public.decorator';
-import { HumanReadableConsoleLogger } from 'src/common/observability/human-readable-console.logger';
-import { IngestionService } from './ingestion.service';
+import { Public } from '../@decorators/public.decorator';
+import {
+  CrawlerControlService,
+  rpcError,
+} from '../crawler-control/crawler.service';
+import { WorkerAuthService } from '../crawler-control/worker-auth.service';
+import { WorkerIngestionService } from './worker-ingestion.service';
 
+@Public()
 @Controller()
 export class IngestionGrpcController {
-  private readonly logger = new Logger(IngestionGrpcController.name);
-  
   constructor(
-  private readonly ingestionService: IngestionService,
-) {}
-
-  @Public()
+    private readonly control: CrawlerControlService,
+    private readonly auth: WorkerAuthService,
+    private readonly ingestion: WorkerIngestionService,
+  ) {}
+  private identity(request: WorkerRequestType, metadata: Metadata) {
+    this.auth.authenticate(metadata);
+    return this.control.identity({
+      workerId: request.workerId,
+      sourceIds: request.sourceIds,
+    });
+  }
+  @GrpcMethod('JobIngestionService', 'ClaimWork')
+  async claimWork(request: WorkerRequestType, metadata: Metadata) {
+    const identity = this.identity(request, metadata);
+    return { payloadJson: JSON.stringify(await this.control.claim(identity)) };
+  }
+  @GrpcMethod('JobIngestionService', 'RenewLease')
+  async renewLease(request: WorkerRequestType, metadata: Metadata) {
+    const identity = this.identity(request, metadata);
+    return {
+      payloadJson: JSON.stringify(
+        await this.control.renew(
+          identity,
+          request.runId ?? '',
+          request.leaseToken ?? '',
+        ),
+      ),
+    };
+  }
+  @GrpcMethod('JobIngestionService', 'CompleteRun')
+  async completeRun(request: WorkerRequestType, metadata: Metadata) {
+    const identity = this.identity(request, metadata);
+    let payload: unknown;
+    try {
+      payload = JSON.parse(request.payloadJson);
+    } catch {
+      rpcError(status.INVALID_ARGUMENT, 'Invalid completion JSON');
+    }
+    return {
+      payloadJson: JSON.stringify(
+        await this.control.complete(
+          identity,
+          request.runId ?? '',
+          request.leaseToken ?? '',
+          payload,
+        ),
+      ),
+    };
+  }
   @GrpcMethod('JobIngestionService', 'IngestJobs')
-  async ingestJobs(request: IngestJobsRequestType): Promise<IngestJobsResponseType> {
-    this.logger.log(
-      `Received ${request.jobs.length} jobs for ingestion from ${request.sourceId}`,
-    );
-    const response = await this.ingestionService.ingestJobs(request)
-     this.logger.log(
-    `Processed ${response.received} jobs from ${request.sourceId}`,
-  );
-
-  return response;
+  ingestJobs(request: IngestJobsRequestType, metadata: Metadata) {
+    this.auth.authenticate(metadata);
+    const workerId = metadata.get('x-worker-id')[0];
+    const identity = this.control.identity({ workerId, sourceIds: ['myjobs'] });
+    return this.ingestion.ingest(identity, request);
   }
 }

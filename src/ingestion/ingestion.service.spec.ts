@@ -63,7 +63,12 @@ describe('IngestionService', () => {
           'fixture-001',
         );
 
-        expect(result).toEqual({ received: 1 });
+        expect(result).toEqual({
+          received: 1,
+          created: 0,
+          updated: 0,
+          observed: 1,
+        });
       } finally {
         await module.close();
       }

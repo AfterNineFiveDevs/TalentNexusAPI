@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { ServerCredentials } from '@grpc/grpc-js';
 import { VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ModulesContainer, NestFactory } from '@nestjs/core';
@@ -28,6 +30,19 @@ async function bootstrap() {
     {
       transport: Transport.GRPC,
       options: {
+        credentials:
+          process.env.GRPC_TLS_CERT_PATH && process.env.GRPC_TLS_KEY_PATH
+            ? ServerCredentials.createSsl(
+                null,
+                [
+                  {
+                    cert_chain: readFileSync(process.env.GRPC_TLS_CERT_PATH),
+                    private_key: readFileSync(process.env.GRPC_TLS_KEY_PATH),
+                  },
+                ],
+                false,
+              )
+            : ServerCredentials.createInsecure(),
         package: 'talentnexus.ingestion.v1',
         protoPath,
         url: process.env.GRPC_URL ?? '0.0.0.0:50051',

@@ -7,6 +7,8 @@ import {
   Logger,
 } from '@nestjs/common';
 import type { Response } from 'express';
+import { RpcException } from '@nestjs/microservices';
+import { Observable, throwError } from 'rxjs';
 import {
   API_ERROR_MESSAGES,
   type ApiFieldErrors,
@@ -17,7 +19,13 @@ import { failure } from '../http/api-response.factory';
 export class ApiExceptionFilter implements ExceptionFilter {
   private readonly logger = new Logger(ApiExceptionFilter.name);
 
-  catch(exception: unknown, host: ArgumentsHost): void {
+  catch(exception: unknown, host: ArgumentsHost): void | Observable<never> {
+    if (host.getType() === 'rpc')
+      return throwError(() =>
+        exception instanceof RpcException
+          ? exception.getError()
+          : { code: 13, message: 'Internal ingestion error' },
+      );
     const response = host.switchToHttp().getResponse<Response>();
 
     if (exception instanceof HttpException) {

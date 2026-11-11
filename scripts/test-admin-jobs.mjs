@@ -143,14 +143,7 @@ try {
   // An explicit --db prevents this test from advancing the repository's db ref.
   run(
     './node_modules/.bin/prisma',
-    [
-      'db',
-      'migrate',
-      '--db',
-      url,
-      '--to',
-      '20261031T2023_admin_authentication',
-    ],
+    ['db', 'migrate', '--db', url, '--to', '20261101T0025_crawler_scheduling'],
     { env },
   );
   const preserved = run('docker', [
@@ -163,7 +156,7 @@ try {
     'admin_jobs_fixture',
     '-At',
     '-c',
-    `SELECT count(*) FROM public.job WHERE "externalId"='before-upgrade' AND version=0 AND "deletedAt" IS NULL AND "adminEditedAt" IS NULL AND description='Existing content'`,
+    `SELECT count(*) FROM public.job WHERE "externalId"='before-upgrade' AND version=0 AND "deletedAt" IS NULL AND "adminEditedAt" IS NULL AND description='Existing content' AND "categoryId" IS NULL`,
   ]);
   assert.equal(
     preserved,

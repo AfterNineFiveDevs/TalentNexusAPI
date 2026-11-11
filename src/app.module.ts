@@ -1,3 +1,5 @@
+import { CategoriesModule } from './categories/categories.module';
+import { AdminAnalyticsModule } from './admin-analytics/admin-analytics.module';
 import { AdminAuthModule } from './admin-auth/admin-auth.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
@@ -35,6 +37,9 @@ import { JobsModule } from './jobs/jobs.module';
     }),
     IngestionModule,
     JobsModule,
+    CategoriesModule,
+    AdminAnalyticsModule,
+    CrawlerControlModule,
   ],
   controllers: [AppController],
   providers: [
@@ -47,3 +52,4 @@ import { JobsModule } from './jobs/jobs.module';
   ],
 })
 export class AppModule {}
+import { CrawlerControlModule } from './crawler-control/crawler.module';

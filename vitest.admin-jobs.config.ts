@@ -18,6 +18,7 @@ if (
 process.env.DATABASE_URL = connection;
 Object.assign(process.env, {
   ENVIRONMENT: 'test',
+  CRAWLER_WORKER_TOKEN: 'isolated-crawler-worker-authentication-token',
   JWT_SECRET: 'isolated-admin-auth-fixture-signing-key',
   JWT_EXPIRES_IN: '15m',
   ADMIN_MFA_ENCRYPTION_KEY: Buffer.alloc(32, 7).toString('base64'),
@@ -53,6 +54,8 @@ export default defineConfig({
     include: [
       'test/admin-jobs.integration-spec.ts',
       'test/admin-auth.integration-spec.ts',
+      'test/admin-dashboard.integration-spec.ts',
+      'test/crawler.integration-spec.ts',
     ],
     environment: 'node',
     fileParallelism: false,

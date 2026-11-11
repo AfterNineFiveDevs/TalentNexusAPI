@@ -1,0 +1,440 @@
+[
+  {
+    "id": "table.crawlerBatch",
+    "label": "Create table \"crawlerBatch\"",
+    "summary": "Creates table \"crawlerBatch\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "crawlerBatch"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"crawlerBatch\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"crawlerBatch\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"crawlerBatch\"",
+        "sql": "CREATE TABLE \"public\".\"crawlerBatch\" (\n  \"acknowledgment\" text NOT NULL,\n  \"batchId\" uuid NOT NULL,\n  \"id\" uuid NOT NULL,\n  \"payloadHash\" text NOT NULL,\n  \"runId\" uuid NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"crawlerBatch\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"crawlerBatch\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.crawlerRun",
+    "label": "Create table \"crawlerRun\"",
+    "summary": "Creates table \"crawlerRun\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "crawlerRun"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"crawlerRun\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"crawlerRun\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"crawlerRun\"",
+        "sql": "CREATE TABLE \"public\".\"crawlerRun\" (\n  \"configuration\" text NOT NULL,\n  \"counts\" text NOT NULL,\n  \"deadlineAt\" timestamptz,\n  \"failures\" text DEFAULT '[]' NOT NULL,\n  \"finishedAt\" timestamptz,\n  \"id\" uuid NOT NULL,\n  \"leaseExpiresAt\" timestamptz,\n  \"leaseHash\" text,\n  \"queuedAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"sourceId\" text NOT NULL,\n  \"startedAt\" timestamptz,\n  \"status\" text NOT NULL,\n  \"trigger\" text NOT NULL,\n  \"workerId\" text,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"crawler_run_status_901551c0\" CHECK (status IN ('QUEUED','RUNNING','SUCCEEDED','PARTIAL','FAILED','ABANDONED'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"crawlerRun\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"crawlerRun\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.crawlerSource",
+    "label": "Create table \"crawlerSource\"",
+    "summary": "Creates table \"crawlerSource\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "crawlerSource"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"crawlerSource\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"crawlerSource\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"crawlerSource\"",
+        "sql": "CREATE TABLE \"public\".\"crawlerSource\" (\n  \"enabled\" bool DEFAULT false NOT NULL,\n  \"nextDueAt\" timestamptz,\n  \"pageLimit\" int4 DEFAULT 2 NOT NULL,\n  \"schedule\" text NOT NULL,\n  \"sourceId\" text NOT NULL,\n  \"timezone\" text DEFAULT 'Asia/Yangon' NOT NULL,\n  \"version\" int4 DEFAULT 0 NOT NULL,\n  PRIMARY KEY (\"sourceId\"),\n  CONSTRAINT \"crawler_source_bounds_fe6dc966\" CHECK (version >= 0 AND \"pageLimit\" BETWEEN 1 AND 100)\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"crawlerSource\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"crawlerSource\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.crawlerWorker",
+    "label": "Create table \"crawlerWorker\"",
+    "summary": "Creates table \"crawlerWorker\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "crawlerWorker"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"crawlerWorker\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"crawlerWorker\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"crawlerWorker\"",
+        "sql": "CREATE TABLE \"public\".\"crawlerWorker\" (\n  \"lastSeenAt\" timestamptz NOT NULL,\n  \"sourceIds\" text NOT NULL,\n  \"workerId\" text NOT NULL,\n  PRIMARY KEY (\"workerId\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"crawlerWorker\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"crawlerWorker\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.crawlerBatch.crawlerBatch_runId_batchId_key",
+    "label": "Add unique constraint on \"crawlerBatch\" (runId, batchId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "crawlerBatch_runId_batchId_key",
+        "table": "crawlerBatch"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"crawlerBatch_runId_batchId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "crawlerBatch_runId_batchId_key",
+          "public",
+          "\"public\".\"crawlerBatch\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"crawlerBatch_runId_batchId_key\"",
+        "sql": "ALTER TABLE \"public\".\"crawlerBatch\" ADD CONSTRAINT \"crawlerBatch_runId_batchId_key\" UNIQUE (\"runId\", \"batchId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"crawlerBatch_runId_batchId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "crawlerBatch_runId_batchId_key",
+          "public",
+          "\"public\".\"crawlerBatch\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.crawlerBatch.crawlerBatch_runId_idx_a6016437",
+    "label": "Create index \"crawlerBatch_runId_idx_a6016437\" on \"crawlerBatch\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "crawlerBatch_runId_idx_a6016437",
+        "table": "crawlerBatch"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"crawlerBatch_runId_idx_a6016437\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"crawlerBatch_runId_idx_a6016437\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"crawlerBatch_runId_idx_a6016437\"",
+        "sql": "CREATE INDEX \"crawlerBatch_runId_idx_a6016437\" ON \"public\".\"crawlerBatch\" (\"runId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"crawlerBatch_runId_idx_a6016437\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"crawlerBatch_runId_idx_a6016437\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.crawlerRun.crawlerRun_sourceId_idx_d92a2571",
+    "label": "Create index \"crawlerRun_sourceId_idx_d92a2571\" on \"crawlerRun\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "crawlerRun_sourceId_idx_d92a2571",
+        "table": "crawlerRun"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"crawlerRun_sourceId_idx_d92a2571\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"crawlerRun_sourceId_idx_d92a2571\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"crawlerRun_sourceId_idx_d92a2571\"",
+        "sql": "CREATE INDEX \"crawlerRun_sourceId_idx_d92a2571\" ON \"public\".\"crawlerRun\" (\"sourceId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"crawlerRun_sourceId_idx_d92a2571\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"crawlerRun_sourceId_idx_d92a2571\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.crawlerRun.crawlerRun_sourceId_status_idx_271a9fd6",
+    "label": "Create index \"crawlerRun_sourceId_status_idx_271a9fd6\" on \"crawlerRun\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "crawlerRun_sourceId_status_idx_271a9fd6",
+        "table": "crawlerRun"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"crawlerRun_sourceId_status_idx_271a9fd6\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"crawlerRun_sourceId_status_idx_271a9fd6\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"crawlerRun_sourceId_status_idx_271a9fd6\"",
+        "sql": "CREATE INDEX \"crawlerRun_sourceId_status_idx_271a9fd6\" ON \"public\".\"crawlerRun\" (\"sourceId\", \"status\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"crawlerRun_sourceId_status_idx_271a9fd6\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"crawlerRun_sourceId_status_idx_271a9fd6\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.crawlerRun.crawlerRun_status_queuedAt_idx_10265669",
+    "label": "Create index \"crawlerRun_status_queuedAt_idx_10265669\" on \"crawlerRun\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "crawlerRun_status_queuedAt_idx_10265669",
+        "table": "crawlerRun"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"crawlerRun_status_queuedAt_idx_10265669\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"crawlerRun_status_queuedAt_idx_10265669\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"crawlerRun_status_queuedAt_idx_10265669\"",
+        "sql": "CREATE INDEX \"crawlerRun_status_queuedAt_idx_10265669\" ON \"public\".\"crawlerRun\" (\"status\", \"queuedAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"crawlerRun_status_queuedAt_idx_10265669\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"crawlerRun_status_queuedAt_idx_10265669\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.crawlerBatch.crawlerBatch_runId_fkey",
+    "label": "Add foreign key \"crawlerBatch_runId_fkey\" on \"crawlerBatch\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "crawlerBatch_runId_fkey",
+        "table": "crawlerBatch"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"crawlerBatch_runId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "crawlerBatch_runId_fkey",
+          "public",
+          "\"public\".\"crawlerBatch\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"crawlerBatch_runId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"crawlerBatch\"\nADD CONSTRAINT \"crawlerBatch_runId_fkey\"\nFOREIGN KEY (\"runId\")\nREFERENCES \"public\".\"crawlerRun\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"crawlerBatch_runId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "crawlerBatch_runId_fkey",
+          "public",
+          "\"public\".\"crawlerBatch\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.crawlerRun.crawlerRun_sourceId_fkey",
+    "label": "Add foreign key \"crawlerRun_sourceId_fkey\" on \"crawlerRun\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "crawlerRun_sourceId_fkey",
+        "table": "crawlerRun"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"crawlerRun_sourceId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "crawlerRun_sourceId_fkey",
+          "public",
+          "\"public\".\"crawlerRun\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"crawlerRun_sourceId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"crawlerRun\"\nADD CONSTRAINT \"crawlerRun_sourceId_fkey\"\nFOREIGN KEY (\"sourceId\")\nREFERENCES \"public\".\"crawlerSource\" (\"sourceId\")\nON DELETE RESTRICT"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"crawlerRun_sourceId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "crawlerRun_sourceId_fkey",
+          "public",
+          "\"public\".\"crawlerRun\""
+        ]
+      }
+    ]
+  }
+]

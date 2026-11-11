@@ -179,3 +179,10 @@ See [admin authentication](docs/admin-auth.md) for invitation-only enrollment,
 mandatory MFA, session lifecycle, access management and operator commands.
 `ADMIN_MFA_ENCRYPTION_KEY` is now required at startup. Admin routes require an
 active MFA session; ordinary ADMIN-role access tokens are insufficient.
+
+## Admin dashboard APIs
+
+See [categories, subscriptions and dashboard analytics](docs/admin-dashboard.md)
+for the remaining admin endpoints, candidate subscription support, category-aware
+job management and the additive dashboard migration.
+Crawler scheduling and worker deployment: [admin crawler guide](docs/admin-crawler.md).

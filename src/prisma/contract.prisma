@@ -1,4 +1,50 @@
 // use prisma-8
+model CrawlerSource {
+  sourceId String @id
+  enabled Boolean @default(false)
+  schedule String
+  timezone String @default("Asia/Yangon")
+  pageLimit Int @default(2)
+  version Int @default(0)
+  nextDueAt TimestamptzString?
+  runs CrawlerRun[]
+  @@check(expression: "version >= 0 AND \"pageLimit\" BETWEEN 1 AND 100", name: "crawler_source_bounds")
+}
+model CrawlerRun {
+  id Uuid @id @default(uuid())
+  sourceId String
+  source CrawlerSource @relation(fields: [sourceId], references: [sourceId], onDelete: Restrict)
+  trigger String
+  status String
+  configuration String
+  workerId String?
+  leaseHash String?
+  leaseExpiresAt TimestamptzString?
+  deadlineAt TimestamptzString?
+  queuedAt TimestamptzString @default(now())
+  startedAt TimestamptzString?
+  finishedAt TimestamptzString?
+  counts String
+  failures String @default("[]")
+  batches CrawlerBatch[]
+  @@index([sourceId, status])
+  @@index([status, queuedAt])
+  @@check(expression: "status IN ('QUEUED','RUNNING','SUCCEEDED','PARTIAL','FAILED','ABANDONED')", name: "crawler_run_status")
+}
+model CrawlerBatch {
+  id Uuid @id @default(uuid())
+  runId Uuid
+  run CrawlerRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  batchId Uuid
+  payloadHash String
+  acknowledgment String
+  @@unique([runId, batchId])
+}
+model CrawlerWorker {
+  workerId String @id
+  sourceIds String
+  lastSeenAt TimestamptzString
+}
 model User {
   id                       Uuid                       @id @default(uuid())
   email                    String                     @unique
@@ -8,6 +54,7 @@ model User {
   termAccepted             Boolean
   signUpMethod             SignUpMethod               @default(EMAIL)
   verifiedAt               TimestamptzString?
+  categorySubscriptions    CategorySubscription[]
   profile                  Profile?
   authSessions             AuthSession[]
   authActionTokens         AuthActionToken[]
@@ -83,6 +130,8 @@ model Cv {
 }
 
 model Job {
+  categoryId Uuid?
+  category Category? @relation(fields: [categoryId], references: [id], onDelete: Restrict)
   id             Uuid      @id @default(uuid())
   sourceId       String
   externalId     String
@@ -117,6 +166,7 @@ model Job {
   updatedAt      temporal.updatedAtString()
 
   @@unique([sourceId, externalId])
+  @@index([categoryId])
   @@index([status, publishedAt])
   @@index([deletedAt, status, createdAt])
   @@check(expression: "version >= 0", name: "job_version_nonnegative")
@@ -231,4 +281,35 @@ model AdminAuthAttempt {
   key String @id
   attempts Int @default(0)
   windowStartedAt TimestamptzString @default(now())
+}
+
+model Category {
+  id Uuid @id @default(uuid())
+  name String
+  normalizedName String @unique
+  description String @default("")
+  status CategoryStatus @default(ACTIVE)
+  version Int @default(0)
+  jobs Job[]
+  subscriptions CategorySubscription[]
+  createdAt TimestamptzString @default(now())
+  updatedAt temporal.updatedAtString()
+  @@index([status, name])
+  @@check(expression: "version >= 0", name: "category_version_nonnegative")
+}
+model CategorySubscription {
+  id Uuid @id @default(uuid())
+  userId Uuid
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  categoryId Uuid
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  createdAt TimestamptzString @default(now())
+  @@unique([userId, categoryId])
+  @@index([categoryId, createdAt])
+}
+enum CategoryStatus {
+  @@type("pg/text@1")
+  ACTIVE
+  HIDDEN
+  ARCHIVED
 }

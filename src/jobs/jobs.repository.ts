@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
 
 import { randomUUID } from 'node:crypto';
-import type { AdminJobsQuery, JobContent } from '@talent-nexus/contracts';
+import type {
+  AdminJobsQuery,
+  AdminJobsFilter,
+  JobContent,
+} from '@talent-nexus/contracts';
 import type { Scalars } from '@prisma/orm-postgres/family-contract/types';
 import type { Models } from '../prisma/contract';
 
@@ -15,10 +19,10 @@ function containsPattern(value: string): string {
   return `%${escaped}%`;
 }
 
-@Injectable()
-export class JobsRepository {
-  async findMany(query: AdminJobsQuery) {
-    let jobs = db.orm.public.Job;
+export class JobsStore {
+  constructor(private readonly orm: typeof db.orm.public) {}
+  private filtered(query: AdminJobsFilter) {
+    let jobs = this.orm.Job;
 
     if (query.deletion === 'active') {
       jobs = jobs.where((job) => job.deletedAt.isNull());
@@ -52,6 +56,32 @@ export class JobsRepository {
       jobs = jobs.where({ status: query.status });
     }
 
+    if (query.categoryId !== undefined)
+      jobs = jobs.where({ categoryId: query.categoryId });
+    return jobs;
+  }
+  async summary(query: AdminJobsFilter) {
+    const rows = await this.filtered(query)
+      .groupBy('status')
+      .aggregate((a) => ({ count: a.count() }));
+    const statusCounts = { PENDING: 0, PUBLISHED: 0, REJECTED: 0, CLOSED: 0 };
+    for (const row of rows) statusCounts[row.status] = row.count;
+    return {
+      total: rows.reduce((sum, row) => sum + row.count, 0),
+      statusCounts,
+    };
+  }
+  async sources(query: AdminJobsFilter) {
+    const rows = await this.filtered(query)
+      .groupBy('sourceId')
+      .aggregate((a) => ({ count: a.count() }));
+    return rows.sort((a, b) => a.sourceId.localeCompare(b.sourceId));
+  }
+  category(id: string) {
+    return this.orm.Category.where({ id }).select('status').first();
+  }
+  async findMany(query: AdminJobsQuery) {
+    const jobs = this.filtered(query);
     const { total } = await jobs.aggregate((aggregate) => ({
       total: aggregate.count(),
     }));
@@ -61,6 +91,7 @@ export class JobsRepository {
     const items = await jobs
       .select(
         'id',
+        'categoryId',
         'title',
         'companyName',
         'location',
@@ -92,7 +123,7 @@ export class JobsRepository {
   }
 
   async findById(id: string): Promise<JobRow | null> {
-    return db.orm.public.Job.where({ id }).first();
+    return this.orm.Job.where({ id }).first();
   }
 
   async createManual(
@@ -101,7 +132,7 @@ export class JobsRepository {
     note?: string,
   ): Promise<JobRow> {
     const now = new Date().toISOString();
-    return db.orm.public.Job.create({
+    return this.orm.Job.create({
       ...content,
       sourceId: 'manual',
       externalId: randomUUID(),
@@ -119,7 +150,7 @@ export class JobsRepository {
     current: JobRow,
     changes: JobWrite,
   ): Promise<JobRow | null> {
-    let jobs = db.orm.public.Job.where({
+    let jobs = this.orm.Job.where({
       id: current.id,
       version: current.version,
       status: current.status,
@@ -130,5 +161,22 @@ export class JobsRepository {
         : jobs.where({ deletedAt: current.deletedAt });
 
     return jobs.update({ ...changes, version: current.version + 1 });
+  }
+}
+
+@Injectable()
+export class JobsRepository extends JobsStore {
+  constructor() {
+    super(db.orm.public);
+  }
+  transaction<T>(operation: (store: JobsStore) => Promise<T>) {
+    return db.transaction(async (tx) => {
+      await tx.query(
+        db.raw.sql`SELECT pg_advisory_xact_lock(1846532101)::text AS locked`
+          .returnsRow({ locked: 'pg/text@1' })
+          .build(),
+      );
+      return operation(new JobsStore(tx.orm.public));
+    });
   }
 }

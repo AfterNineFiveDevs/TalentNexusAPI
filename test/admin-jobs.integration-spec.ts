@@ -252,10 +252,10 @@ describe('Admin job contracts and HTTP authorization', () => {
       new DocumentBuilder().addBearerAuth().build(),
     );
     applyZodSchemasToSwagger(doc, app.get(ModulesContainer));
-    expect(Object.keys(doc.paths)).toHaveLength(7);
+    expect(Object.keys(doc.paths)).toHaveLength(9);
     expect(
       Object.values(doc.paths).flatMap((path) => Object.keys(path)),
-    ).toHaveLength(10);
+    ).toHaveLength(12);
     expect(doc.components?.schemas?.CreateAdminJobDto).toHaveProperty(
       'additionalProperties',
       false,

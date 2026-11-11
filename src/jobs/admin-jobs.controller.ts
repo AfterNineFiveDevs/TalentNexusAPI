@@ -9,6 +9,7 @@ import {
   Post,
   Query,
   UseGuards,
+  applyDecorators,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -24,6 +25,9 @@ import {
   AdminJobActionDto,
   AdminJobReasonDto,
   AdminJobsQueryDto,
+  AdminJobsFilterDto,
+  adminJobsSummarySchema,
+  adminJobSourcesSchema,
   CreateAdminJobDto,
   JobIdParamsDto,
   PublishAdminJobDto,
@@ -34,6 +38,7 @@ import {
 } from '@talent-nexus/contracts';
 import { CurrentUser } from '../@decorators/current-user.decorator';
 import { AdminGuard } from '../auth/admin.guard';
+import { detailSchema } from '../common/swagger/response-schemas';
 import { JobsService } from './jobs.service';
 
 const schemaOf = (schema: z.ZodType) =>
@@ -76,6 +81,30 @@ const listResponse = {
   },
 };
 
+const jobFilterQueries = () =>
+  applyDecorators(
+    ApiQuery({
+      name: 'deletion',
+      required: false,
+      enum: ['active', 'deleted', 'all'],
+    }),
+    ApiQuery({ name: 'location', required: false, type: String }),
+    ApiQuery({ name: 'title', required: false, type: String }),
+    ApiQuery({ name: 'companyName', required: false, type: String }),
+    ApiQuery({ name: 'sourceId', required: false, type: String }),
+    ApiQuery({
+      name: 'categoryId',
+      required: false,
+      type: String,
+      format: 'uuid',
+    }),
+    ApiQuery({
+      name: 'status',
+      required: false,
+      enum: ['PENDING', 'PUBLISHED', 'REJECTED', 'CLOSED'],
+    }),
+  );
+
 @ApiTags('Admin jobs')
 @ApiBearerAuth()
 @ApiResponse({ status: 400, description: 'Invalid request' })
@@ -97,6 +126,12 @@ export class AdminJobsController {
   @ApiQuery({ name: 'location', required: false, type: String })
   @ApiQuery({ name: 'title', required: false, type: String })
   @ApiQuery({ name: 'companyName', required: false, type: String })
+  @ApiQuery({
+    name: 'categoryId',
+    required: false,
+    format: 'uuid',
+    type: String,
+  })
   @ApiQuery({ name: 'sourceId', required: false, type: String })
   @ApiQuery({
     name: 'status',
@@ -131,6 +166,28 @@ export class AdminJobsController {
   @ApiQuery({ name: 'sortOrder', required: false, enum: ['asc', 'desc'] })
   list(@Query() query: AdminJobsQueryDto) {
     return this.jobs.findMany(query);
+  }
+
+  @Get('summary')
+  @jobFilterQueries()
+  @ApiOperation({
+    summary:
+      'Job totals by lifecycle status using the same filters as the list',
+  })
+  @ApiResponse({ status: 200, schema: detailSchema(adminJobsSummarySchema) })
+  summary(@Query() query: AdminJobsFilterDto) {
+    return this.jobs.summary(query);
+  }
+
+  @Get('sources')
+  @jobFilterQueries()
+  @ApiOperation({
+    summary:
+      'Distinct stored source IDs and filtered counts; does not claim crawler connectivity',
+  })
+  @ApiResponse({ status: 200, schema: detailSchema(adminJobSourcesSchema) })
+  sources(@Query() query: AdminJobsFilterDto) {
+    return this.jobs.sources(query);
   }
 
   @Get(':id')

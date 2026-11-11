@@ -36,6 +36,30 @@
       "model": "AuthSession",
       "namespace": "public"
     },
+    "category": {
+      "model": "Category",
+      "namespace": "public"
+    },
+    "categorySubscription": {
+      "model": "CategorySubscription",
+      "namespace": "public"
+    },
+    "crawlerBatch": {
+      "model": "CrawlerBatch",
+      "namespace": "public"
+    },
+    "crawlerRun": {
+      "model": "CrawlerRun",
+      "namespace": "public"
+    },
+    "crawlerSource": {
+      "model": "CrawlerSource",
+      "namespace": "public"
+    },
+    "crawlerWorker": {
+      "model": "CrawlerWorker",
+      "namespace": "public"
+    },
     "cv": {
       "model": "Cv",
       "namespace": "public"
@@ -76,6 +100,23 @@
               {
                 "name": "GOOGLE",
                 "value": "GOOGLE"
+              }
+            ]
+          },
+          "CategoryStatus": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "ACTIVE",
+                "value": "ACTIVE"
+              },
+              {
+                "name": "HIDDEN",
+                "value": "HIDDEN"
+              },
+              {
+                "name": "ARCHIVED",
+                "value": "ARCHIVED"
               }
             ]
           },
@@ -984,6 +1025,617 @@
               "table": "authSession"
             }
           },
+          "Category": {
+            "fields": {
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "description": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              },
+              "name": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "normalizedName": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "status": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "CategoryStatus",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "version": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "jobs": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "categoryId"
+                  ]
+                },
+                "to": {
+                  "model": "Job",
+                  "namespace": "public"
+                }
+              },
+              "subscriptions": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "categoryId"
+                  ]
+                },
+                "to": {
+                  "model": "CategorySubscription",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "description": {
+                  "column": "description"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "name": {
+                  "column": "name"
+                },
+                "normalizedName": {
+                  "column": "normalizedName"
+                },
+                "status": {
+                  "column": "status"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                },
+                "version": {
+                  "column": "version"
+                }
+              },
+              "namespaceId": "public",
+              "table": "category"
+            }
+          },
+          "CategorySubscription": {
+            "fields": {
+              "categoryId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              },
+              "userId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "category": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "categoryId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Category",
+                  "namespace": "public"
+                }
+              },
+              "user": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "userId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "categoryId": {
+                  "column": "categoryId"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "userId": {
+                  "column": "userId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "categorySubscription"
+            }
+          },
+          "CrawlerBatch": {
+            "fields": {
+              "acknowledgment": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "batchId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              },
+              "payloadHash": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "runId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "run": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "runId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "CrawlerRun",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "acknowledgment": {
+                  "column": "acknowledgment"
+                },
+                "batchId": {
+                  "column": "batchId"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "payloadHash": {
+                  "column": "payloadHash"
+                },
+                "runId": {
+                  "column": "runId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "crawlerBatch"
+            }
+          },
+          "CrawlerRun": {
+            "fields": {
+              "configuration": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "counts": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "deadlineAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "failures": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "finishedAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              },
+              "leaseExpiresAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "leaseHash": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "queuedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "sourceId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "startedAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "status": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "trigger": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "workerId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "batches": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "runId"
+                  ]
+                },
+                "to": {
+                  "model": "CrawlerBatch",
+                  "namespace": "public"
+                }
+              },
+              "source": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "sourceId"
+                  ],
+                  "targetFields": [
+                    "sourceId"
+                  ]
+                },
+                "to": {
+                  "model": "CrawlerSource",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "configuration": {
+                  "column": "configuration"
+                },
+                "counts": {
+                  "column": "counts"
+                },
+                "deadlineAt": {
+                  "column": "deadlineAt"
+                },
+                "failures": {
+                  "column": "failures"
+                },
+                "finishedAt": {
+                  "column": "finishedAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "leaseExpiresAt": {
+                  "column": "leaseExpiresAt"
+                },
+                "leaseHash": {
+                  "column": "leaseHash"
+                },
+                "queuedAt": {
+                  "column": "queuedAt"
+                },
+                "sourceId": {
+                  "column": "sourceId"
+                },
+                "startedAt": {
+                  "column": "startedAt"
+                },
+                "status": {
+                  "column": "status"
+                },
+                "trigger": {
+                  "column": "trigger"
+                },
+                "workerId": {
+                  "column": "workerId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "crawlerRun"
+            }
+          },
+          "CrawlerSource": {
+            "fields": {
+              "enabled": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "nextDueAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "pageLimit": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "schedule": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "sourceId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "timezone": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "version": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "runs": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "sourceId"
+                  ],
+                  "targetFields": [
+                    "sourceId"
+                  ]
+                },
+                "to": {
+                  "model": "CrawlerRun",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "enabled": {
+                  "column": "enabled"
+                },
+                "nextDueAt": {
+                  "column": "nextDueAt"
+                },
+                "pageLimit": {
+                  "column": "pageLimit"
+                },
+                "schedule": {
+                  "column": "schedule"
+                },
+                "sourceId": {
+                  "column": "sourceId"
+                },
+                "timezone": {
+                  "column": "timezone"
+                },
+                "version": {
+                  "column": "version"
+                }
+              },
+              "namespaceId": "public",
+              "table": "crawlerSource"
+            }
+          },
+          "CrawlerWorker": {
+            "fields": {
+              "lastSeenAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "sourceIds": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "workerId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {},
+            "storage": {
+              "fields": {
+                "lastSeenAt": {
+                  "column": "lastSeenAt"
+                },
+                "sourceIds": {
+                  "column": "sourceIds"
+                },
+                "workerId": {
+                  "column": "workerId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "crawlerWorker"
+            }
+          },
           "Cv": {
             "fields": {
               "createdAt": {
@@ -1076,6 +1728,13 @@
                 "nullable": false,
                 "type": {
                   "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "categoryId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/uuid@1",
                   "kind": "scalar"
                 }
               },
@@ -1254,6 +1913,22 @@
               }
             },
             "relations": {
+              "category": {
+                "cardinality": "N:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "categoryId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Category",
+                  "namespace": "public"
+                }
+              },
               "lastAdminActionBy": {
                 "cardinality": "N:1",
                 "nullable": true,
@@ -1294,6 +1969,9 @@
                 },
                 "applicationUrl": {
                   "column": "applicationUrl"
+                },
+                "categoryId": {
+                  "column": "categoryId"
                 },
                 "closedAt": {
                   "column": "closedAt"
@@ -1595,6 +2273,21 @@
                 },
                 "to": {
                   "model": "AuthSession",
+                  "namespace": "public"
+                }
+              },
+              "categorySubscriptions": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "userId"
+                  ]
+                },
+                "to": {
+                  "model": "CategorySubscription",
                   "namespace": "public"
                 }
               },
@@ -2414,6 +3107,522 @@
                 }
               ]
             },
+            "category": {
+              "checks": [
+                {
+                  "expression": "\"status\" IN ('ACTIVE', 'HIDDEN', 'ARCHIVED')",
+                  "name": "category_status_check_36b268bc",
+                  "prefix": "category_status_check"
+                },
+                {
+                  "expression": "version >= 0",
+                  "name": "category_version_nonnegative_ec05e13a",
+                  "prefix": "category_version_nonnegative"
+                }
+              ],
+              "columns": {
+                "createdAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "description": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": ""
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": false
+                },
+                "name": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "normalizedName": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "status": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "ACTIVE"
+                  },
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "CategoryStatus",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "version": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [
+                {
+                  "columns": [
+                    "status",
+                    "name"
+                  ],
+                  "name": "category_status_name_idx_c8d75216",
+                  "prefix": "category_status_name_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "normalizedName"
+                  ]
+                }
+              ]
+            },
+            "categorySubscription": {
+              "columns": {
+                "categoryId": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": false
+                },
+                "userId": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "userId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "categorySubscription"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "user"
+                  }
+                },
+                {
+                  "onDelete": "restrict",
+                  "source": {
+                    "columns": [
+                      "categoryId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "categorySubscription"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "category"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "categoryId",
+                    "createdAt"
+                  ],
+                  "name": "categorySubscription_categoryId_createdAt_idx_959807f1",
+                  "prefix": "categorySubscription_categoryId_createdAt_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "categoryId"
+                  ],
+                  "name": "categorySubscription_categoryId_idx_15c304f2",
+                  "prefix": "categorySubscription_categoryId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "userId"
+                  ],
+                  "name": "categorySubscription_userId_idx_a489d58a",
+                  "prefix": "categorySubscription_userId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "userId",
+                    "categoryId"
+                  ]
+                }
+              ]
+            },
+            "crawlerBatch": {
+              "columns": {
+                "acknowledgment": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "batchId": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": false
+                },
+                "payloadHash": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "runId": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "runId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "crawlerBatch"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "crawlerRun"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "runId"
+                  ],
+                  "name": "crawlerBatch_runId_idx_a6016437",
+                  "prefix": "crawlerBatch_runId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "runId",
+                    "batchId"
+                  ]
+                }
+              ]
+            },
+            "crawlerRun": {
+              "checks": [
+                {
+                  "expression": "status IN ('QUEUED','RUNNING','SUCCEEDED','PARTIAL','FAILED','ABANDONED')",
+                  "name": "crawler_run_status_901551c0",
+                  "prefix": "crawler_run_status"
+                }
+              ],
+              "columns": {
+                "configuration": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "counts": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "deadlineAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "failures": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "[]"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "finishedAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "id": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": false
+                },
+                "leaseExpiresAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "leaseHash": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "queuedAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "sourceId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "startedAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "status": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "trigger": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "workerId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "restrict",
+                  "source": {
+                    "columns": [
+                      "sourceId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "crawlerRun"
+                  },
+                  "target": {
+                    "columns": [
+                      "sourceId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "crawlerSource"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "sourceId"
+                  ],
+                  "name": "crawlerRun_sourceId_idx_d92a2571",
+                  "prefix": "crawlerRun_sourceId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "sourceId",
+                    "status"
+                  ],
+                  "name": "crawlerRun_sourceId_status_idx_271a9fd6",
+                  "prefix": "crawlerRun_sourceId_status_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "status",
+                    "queuedAt"
+                  ],
+                  "name": "crawlerRun_status_queuedAt_idx_10265669",
+                  "prefix": "crawlerRun_status_queuedAt_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
+            "crawlerSource": {
+              "checks": [
+                {
+                  "expression": "version >= 0 AND \"pageLimit\" BETWEEN 1 AND 100",
+                  "name": "crawler_source_bounds_fe6dc966",
+                  "prefix": "crawler_source_bounds"
+                }
+              ],
+              "columns": {
+                "enabled": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": false
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "nextDueAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "pageLimit": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 2
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "schedule": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "sourceId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "timezone": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "Asia/Yangon"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "version": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "sourceId"
+                ]
+              },
+              "uniques": []
+            },
+            "crawlerWorker": {
+              "columns": {
+                "lastSeenAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "sourceIds": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "workerId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "workerId"
+                ]
+              },
+              "uniques": []
+            },
             "cv": {
               "columns": {
                 "createdAt": {
@@ -2518,6 +3727,11 @@
                   "many": true,
                   "nativeType": "text",
                   "nullable": false
+                },
+                "categoryId": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": true
                 },
                 "closedAt": {
                   "codecId": "pg/timestamptz-string@1",
@@ -2665,6 +3879,23 @@
               },
               "foreignKeys": [
                 {
+                  "onDelete": "restrict",
+                  "source": {
+                    "columns": [
+                      "categoryId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "job"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "category"
+                  }
+                },
+                {
                   "name": "job_last_admin_action_by_fkey",
                   "onDelete": "setNull",
                   "onUpdate": "cascade",
@@ -2703,6 +3934,14 @@
                 }
               ],
               "indexes": [
+                {
+                  "columns": [
+                    "categoryId"
+                  ],
+                  "name": "job_categoryId_idx_15c304f2",
+                  "prefix": "job_categoryId_idx",
+                  "unique": false
+                },
                 {
                   "columns": [
                     "deletedAt",
@@ -2949,6 +4188,14 @@
                 "GOOGLE"
               ]
             },
+            "CategoryStatus": {
+              "kind": "valueSet",
+              "values": [
+                "ACTIVE",
+                "HIDDEN",
+                "ARCHIVED"
+              ]
+            },
             "JobAdminAction": {
               "kind": "valueSet",
               "values": [
@@ -3001,10 +4248,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "cc4e51f6795be8105e9f5a44f799d8de36cbf50a61c52e637550d5fbf107b435"
+    "storageHash": "b2c153e63204237c1f10bca1d2a27423e146b75f265c2f1921cec05a28110dde"
   },
   "execution": {
-    "executionHash": "8b1fbd3c38750f9e7fe3a1958306fce9d7a041c87fa079b016c83129471c1b48",
+    "executionHash": "895454a9e103e2d2d26b18dfc240affb0a0e879fe491ca0a776281648367eff8",
     "mutations": {
       "defaults": [
         {
@@ -3116,6 +4363,65 @@
             "column": "updatedAt",
             "namespace": "public",
             "table": "authSession"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "id",
+            "namespace": "public",
+            "table": "category"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "timestampNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "timestampNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "updatedAt",
+            "namespace": "public",
+            "table": "category"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "id",
+            "namespace": "public",
+            "table": "categorySubscription"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "id",
+            "namespace": "public",
+            "table": "crawlerBatch"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "id",
+            "namespace": "public",
+            "table": "crawlerRun"
           }
         },
         {

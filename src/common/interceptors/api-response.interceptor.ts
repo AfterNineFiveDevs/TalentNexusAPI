@@ -9,10 +9,8 @@ import { isApiSuccessEnvelope, success } from '../http/api-response.factory';
 
 @Injectable()
 export class ApiResponseInterceptor implements NestInterceptor {
-  intercept(
-    _context: ExecutionContext,
-    next: CallHandler,
-  ): Observable<unknown> {
+  intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
+    if (context.getType() !== 'http') return next.handle();
     return next
       .handle()
       .pipe(

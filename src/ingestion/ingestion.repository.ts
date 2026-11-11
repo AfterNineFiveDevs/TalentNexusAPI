@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, Optional } from '@nestjs/common';
 
 import type { ScrapedJobType } from '@talent-nexus/contracts/grpc';
 
@@ -6,8 +6,11 @@ import { db } from '../prisma/db';
 
 @Injectable()
 export class IngestionRepository {
+  constructor(
+    @Optional() @Inject('INGESTION_ORM') private readonly orm = db.orm.public,
+  ) {}
   async createPendingJob(sourceId: string, job: ScrapedJobType) {
-    return db.orm.public.Job.create({
+    return this.orm.Job.create({
       sourceId,
       externalId: job.externalId,
       sourceUrl: job.sourceUrl,
@@ -21,7 +24,7 @@ export class IngestionRepository {
   }
 
   async findBySource(sourceId: string, externalId: string) {
-    return db.orm.public.Job.where({ sourceId, externalId }).first();
+    return this.orm.Job.where({ sourceId, externalId }).first();
   }
 
   async updatePendingJob(
@@ -29,7 +32,7 @@ export class IngestionRepository {
     job: ScrapedJobType,
     expectedVersion: number,
   ) {
-    return db.orm.public.Job.where({
+    return this.orm.Job.where({
       sourceId,
       externalId: job.externalId,
       status: 'PENDING',
@@ -50,7 +53,7 @@ export class IngestionRepository {
   }
 
   async touchLastSeen(sourceId: string, externalId: string) {
-    return db.orm.public.Job.where({ sourceId, externalId }).update({
+    return this.orm.Job.where({ sourceId, externalId }).update({
       lastSeenAt: new Date().toISOString(),
     });
   }

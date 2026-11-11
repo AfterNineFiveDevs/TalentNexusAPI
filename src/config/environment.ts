@@ -17,6 +17,15 @@ export const logLevels = [
 ] as const;
 
 const rawEnvironmentSchema = z.object({
+  GRPC_TLS_CERT_PATH: z.string().min(1).optional(),
+  GRPC_TLS_KEY_PATH: z.string().min(1).optional(),
+  CRAWLER_WORKER_TOKEN: z.string().min(32).optional(),
+  CRAWLER_RUN_TIMEOUT_MS: z.coerce
+    .number()
+    .int()
+    .min(60_000)
+    .max(7_200_000)
+    .default(1_800_000),
   ENVIRONMENT: z.enum(environments).default('development'),
   PORT: z.coerce.number().int().min(1).max(65_535).default(8000),
   DATABASE_URL: z.url(),
@@ -76,6 +85,15 @@ const rawEnvironmentSchema = z.object({
 
 export const environmentSchema = rawEnvironmentSchema.superRefine(
   (environment, context) => {
+    if (
+      Boolean(environment.GRPC_TLS_CERT_PATH) !==
+      Boolean(environment.GRPC_TLS_KEY_PATH)
+    )
+      context.addIssue({
+        code: 'custom',
+        message: 'Set both gRPC TLS certificate and key paths',
+        path: ['GRPC_TLS_CERT_PATH'],
+      });
     if (
       (environment.ENVIRONMENT === 'staging' ||
         environment.ENVIRONMENT === 'production') &&

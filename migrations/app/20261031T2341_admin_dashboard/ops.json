@@ -1,0 +1,491 @@
+[
+  {
+    "id": "table.category",
+    "label": "Create table \"category\"",
+    "summary": "Creates table \"category\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "category"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"category\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": ["\"public\".\"category\""]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"category\"",
+        "sql": "CREATE TABLE \"public\".\"category\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"description\" text DEFAULT '' NOT NULL,\n  \"id\" uuid NOT NULL,\n  \"name\" text NOT NULL,\n  \"normalizedName\" text NOT NULL,\n  \"status\" text DEFAULT 'ACTIVE' NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  \"version\" int4 DEFAULT 0 NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"category_status_check_36b268bc\" CHECK (\"status\" IN ('ACTIVE', 'HIDDEN', 'ARCHIVED')),\n  CONSTRAINT \"category_version_nonnegative_ec05e13a\" CHECK (version >= 0)\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"category\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": ["\"public\".\"category\""]
+      }
+    ]
+  },
+  {
+    "id": "table.categorySubscription",
+    "label": "Create table \"categorySubscription\"",
+    "summary": "Creates table \"categorySubscription\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "categorySubscription"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"categorySubscription\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": ["\"public\".\"categorySubscription\""]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"categorySubscription\"",
+        "sql": "CREATE TABLE \"public\".\"categorySubscription\" (\n  \"categoryId\" uuid NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" uuid NOT NULL,\n  \"userId\" uuid NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"categorySubscription\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": ["\"public\".\"categorySubscription\""]
+      }
+    ]
+  },
+  {
+    "id": "column.public.job.categoryId",
+    "label": "Add column \"categoryId\" to \"job\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "categoryId",
+        "table": "job"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"categoryId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": ["public", "job", "categoryId"]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"categoryId\"",
+        "sql": "ALTER TABLE \"public\".\"job\" ADD COLUMN \"categoryId\" uuid"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"categoryId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": ["public", "job", "categoryId"]
+      }
+    ]
+  },
+  {
+    "id": "unique.category.category_normalizedName_key",
+    "label": "Add unique constraint on \"category\" (normalizedName)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "category_normalizedName_key",
+        "table": "category"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"category_normalizedName_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "category_normalizedName_key",
+          "public",
+          "\"public\".\"category\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"category_normalizedName_key\"",
+        "sql": "ALTER TABLE \"public\".\"category\" ADD CONSTRAINT \"category_normalizedName_key\" UNIQUE (\"normalizedName\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"category_normalizedName_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "category_normalizedName_key",
+          "public",
+          "\"public\".\"category\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.categorySubscription.categorySubscription_userId_categoryId_key",
+    "label": "Add unique constraint on \"categorySubscription\" (userId, categoryId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "categorySubscription_userId_categoryId_key",
+        "table": "categorySubscription"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"categorySubscription_userId_categoryId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "categorySubscription_userId_categoryId_key",
+          "public",
+          "\"public\".\"categorySubscription\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"categorySubscription_userId_categoryId_key\"",
+        "sql": "ALTER TABLE \"public\".\"categorySubscription\" ADD CONSTRAINT \"categorySubscription_userId_categoryId_key\" UNIQUE (\"userId\", \"categoryId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"categorySubscription_userId_categoryId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "categorySubscription_userId_categoryId_key",
+          "public",
+          "\"public\".\"categorySubscription\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.category.category_status_name_idx_c8d75216",
+    "label": "Create index \"category_status_name_idx_c8d75216\" on \"category\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "category_status_name_idx_c8d75216",
+        "table": "category"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"category_status_name_idx_c8d75216\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": ["\"public\".\"category_status_name_idx_c8d75216\""]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"category_status_name_idx_c8d75216\"",
+        "sql": "CREATE INDEX \"category_status_name_idx_c8d75216\" ON \"public\".\"category\" (\"status\", \"name\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"category_status_name_idx_c8d75216\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": ["\"public\".\"category_status_name_idx_c8d75216\""]
+      }
+    ]
+  },
+  {
+    "id": "index.categorySubscription.categorySubscription_categoryId_createdAt_idx_959807f1",
+    "label": "Create index \"categorySubscription_categoryId_createdAt_idx_959807f1\" on \"categorySubscription\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "categorySubscription_categoryId_createdAt_idx_959807f1",
+        "table": "categorySubscription"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"categorySubscription_categoryId_createdAt_idx_959807f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"categorySubscription_categoryId_createdAt_idx_959807f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"categorySubscription_categoryId_createdAt_idx_959807f1\"",
+        "sql": "CREATE INDEX \"categorySubscription_categoryId_createdAt_idx_959807f1\" ON \"public\".\"categorySubscription\" (\"categoryId\", \"createdAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"categorySubscription_categoryId_createdAt_idx_959807f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"categorySubscription_categoryId_createdAt_idx_959807f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.categorySubscription.categorySubscription_categoryId_idx_15c304f2",
+    "label": "Create index \"categorySubscription_categoryId_idx_15c304f2\" on \"categorySubscription\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "categorySubscription_categoryId_idx_15c304f2",
+        "table": "categorySubscription"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"categorySubscription_categoryId_idx_15c304f2\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"categorySubscription_categoryId_idx_15c304f2\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"categorySubscription_categoryId_idx_15c304f2\"",
+        "sql": "CREATE INDEX \"categorySubscription_categoryId_idx_15c304f2\" ON \"public\".\"categorySubscription\" (\"categoryId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"categorySubscription_categoryId_idx_15c304f2\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"categorySubscription_categoryId_idx_15c304f2\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.categorySubscription.categorySubscription_userId_idx_a489d58a",
+    "label": "Create index \"categorySubscription_userId_idx_a489d58a\" on \"categorySubscription\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "categorySubscription_userId_idx_a489d58a",
+        "table": "categorySubscription"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"categorySubscription_userId_idx_a489d58a\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": ["\"public\".\"categorySubscription_userId_idx_a489d58a\""]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"categorySubscription_userId_idx_a489d58a\"",
+        "sql": "CREATE INDEX \"categorySubscription_userId_idx_a489d58a\" ON \"public\".\"categorySubscription\" (\"userId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"categorySubscription_userId_idx_a489d58a\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": ["\"public\".\"categorySubscription_userId_idx_a489d58a\""]
+      }
+    ]
+  },
+  {
+    "id": "index.job.job_categoryId_idx_15c304f2",
+    "label": "Create index \"job_categoryId_idx_15c304f2\" on \"job\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "job_categoryId_idx_15c304f2",
+        "table": "job"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"job_categoryId_idx_15c304f2\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": ["\"public\".\"job_categoryId_idx_15c304f2\""]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"job_categoryId_idx_15c304f2\"",
+        "sql": "CREATE INDEX \"job_categoryId_idx_15c304f2\" ON \"public\".\"job\" (\"categoryId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"job_categoryId_idx_15c304f2\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": ["\"public\".\"job_categoryId_idx_15c304f2\""]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.categorySubscription.categorySubscription_userId_fkey",
+    "label": "Add foreign key \"categorySubscription_userId_fkey\" on \"categorySubscription\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "categorySubscription_userId_fkey",
+        "table": "categorySubscription"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"categorySubscription_userId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "categorySubscription_userId_fkey",
+          "public",
+          "\"public\".\"categorySubscription\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"categorySubscription_userId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"categorySubscription\"\nADD CONSTRAINT \"categorySubscription_userId_fkey\"\nFOREIGN KEY (\"userId\")\nREFERENCES \"public\".\"user\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"categorySubscription_userId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "categorySubscription_userId_fkey",
+          "public",
+          "\"public\".\"categorySubscription\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.categorySubscription.categorySubscription_categoryId_fkey",
+    "label": "Add foreign key \"categorySubscription_categoryId_fkey\" on \"categorySubscription\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "categorySubscription_categoryId_fkey",
+        "table": "categorySubscription"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"categorySubscription_categoryId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "categorySubscription_categoryId_fkey",
+          "public",
+          "\"public\".\"categorySubscription\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"categorySubscription_categoryId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"categorySubscription\"\nADD CONSTRAINT \"categorySubscription_categoryId_fkey\"\nFOREIGN KEY (\"categoryId\")\nREFERENCES \"public\".\"category\" (\"id\")\nON DELETE RESTRICT"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"categorySubscription_categoryId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "categorySubscription_categoryId_fkey",
+          "public",
+          "\"public\".\"categorySubscription\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.job.job_categoryId_fkey",
+    "label": "Add foreign key \"job_categoryId_fkey\" on \"job\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "job_categoryId_fkey",
+        "table": "job"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"job_categoryId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": ["job_categoryId_fkey", "public", "\"public\".\"job\""]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"job_categoryId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"job\"\nADD CONSTRAINT \"job_categoryId_fkey\"\nFOREIGN KEY (\"categoryId\")\nREFERENCES \"public\".\"category\" (\"id\")\nON DELETE RESTRICT"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"job_categoryId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": ["job_categoryId_fkey", "public", "\"public\".\"job\""]
+      }
+    ]
+  }
+]

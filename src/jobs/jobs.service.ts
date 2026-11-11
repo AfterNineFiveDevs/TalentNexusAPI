@@ -10,17 +10,30 @@ import {
   type AdminJobDetail,
   type AdminJobReasonRequest,
   type AdminJobsQuery,
+  type AdminJobsFilter,
   type CreateAdminJobRequest,
   type JobAdminAction,
   type PublishAdminJobRequest,
   type UpdateAdminJobRequest,
 } from '@talent-nexus/contracts';
 import { paginated } from '../common/http/api-response.factory';
-import { JobsRepository, type JobRow, type JobWrite } from './jobs.repository';
+import {
+  JobsRepository,
+  type JobRow,
+  type JobWrite,
+  JobsStore,
+} from './jobs.repository';
 
 @Injectable()
 export class JobsService {
   constructor(private readonly repository: JobsRepository) {}
+
+  summary(query: AdminJobsFilter) {
+    return this.repository.summary(query);
+  }
+  sources(query: AdminJobsFilter) {
+    return this.repository.sources(query);
+  }
 
   async findMany(query: AdminJobsQuery) {
     const { items, total } = await this.repository.findMany(query);
@@ -46,7 +59,10 @@ export class JobsService {
     actorId: string,
   ): Promise<AdminJobDetail> {
     const { note, ...content } = input;
-    return this.repository.createManual(content, actorId, note);
+    return this.repository.transaction(async (store) => {
+      await this.validateCategory(store, content.categoryId);
+      return store.createManual(content, actorId, note);
+    });
   }
 
   edit(id: string, input: UpdateAdminJobRequest, actorId: string) {
@@ -126,6 +142,19 @@ export class JobsService {
     }));
   }
 
+  private async validateCategory(
+    store: JobsStore,
+    categoryId: string | null | undefined,
+  ) {
+    if (categoryId === undefined || categoryId === null) return;
+    const category = await store.category(categoryId);
+    if (!category) throw new NotFoundException('Category not found');
+    if (category.status === 'ARCHIVED')
+      throw new ConflictException(
+        'Archived categories cannot receive new job assignments',
+      );
+  }
+
   private requireStatus(job: JobRow, statuses: JobRow['status'][]) {
     if (!statuses.includes(job.status))
       throw new ConflictException(
@@ -152,12 +181,16 @@ export class JobsService {
       );
     }
     const now = new Date().toISOString();
-    const saved = await this.repository.compareAndUpdate(job, {
-      ...changes(job, now),
-      lastAdminAction: action,
-      lastAdminActionById: actorId,
-      lastAdminActionAt: now,
-      lastAdminActionNote: input.note ?? null,
+    const values = changes(job, now);
+    const saved = await this.repository.transaction(async (store) => {
+      await this.validateCategory(store, values.categoryId);
+      return store.compareAndUpdate(job, {
+        ...values,
+        lastAdminAction: action,
+        lastAdminActionById: actorId,
+        lastAdminActionAt: now,
+        lastAdminActionNote: input.note ?? null,
+      });
     });
     if (!saved)
       throw new ConflictException('Job changed; refresh before retrying');

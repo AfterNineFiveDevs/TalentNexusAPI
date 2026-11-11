@@ -1,3 +1,6 @@
+> The current application also includes [dashboard APIs](admin-dashboard.md) and
+> their additive migration after admin authentication. Follow both rollout guides.
+
 # Administrator authentication API
 
 Implemented locally on 2026-11-01. Backend only. This guide describes source, not
