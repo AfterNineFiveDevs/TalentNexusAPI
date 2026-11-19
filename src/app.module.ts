@@ -15,6 +15,7 @@ import { PrismaLifecycleService } from './prisma/prisma-lifecycle.service';
 import { UsersModule } from './users/users.module';
 import { IngestionModule } from './ingestion/ingestion.module.js';
 import { JobsModule } from './jobs/jobs.module';
+import { ProfilesModule } from './profiles/profiles.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { JobsModule } from './jobs/jobs.module';
     IngestionModule,
     JobsModule,
     CategoriesModule,
+    ProfilesModule,
     AdminAnalyticsModule,
     CrawlerControlModule,
   ],
