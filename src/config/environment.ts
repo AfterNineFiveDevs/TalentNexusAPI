@@ -57,6 +57,18 @@ const rawEnvironmentSchema = z.object({
         .map((clientId) => clientId.trim())
         .filter(Boolean),
     ),
+  LINKEDIN_CLIENT_ID: z.string().trim().optional(),
+  LINKEDIN_CLIENT_SECRET: z.string().trim().optional(),
+  LINKEDIN_REDIRECT_URIS: z
+    .string()
+    .trim()
+    .optional()
+    .transform((value) =>
+      (value ?? '')
+        .split(',')
+        .map((uri) => uri.trim())
+        .filter(Boolean),
+    ),
   REFRESH_TOKEN_TTL_SECONDS: z.coerce
     .number()
     .int()
@@ -170,6 +182,32 @@ export const environmentSchema = rawEnvironmentSchema.superRefine(
         path: ['GOOGLE_CLIENT_IDS'],
         message: 'GOOGLE_CLIENT_IDS is required outside development and test',
       });
+    }
+
+    if (
+      environment.ENVIRONMENT !== 'development' &&
+      environment.ENVIRONMENT !== 'test'
+    ) {
+      for (const key of [
+        'LINKEDIN_CLIENT_ID',
+        'LINKEDIN_CLIENT_SECRET',
+      ] as const) {
+        if (!environment[key]) {
+          context.addIssue({
+            code: 'custom',
+            path: [key],
+            message: `${key} is required outside development and test`,
+          });
+        }
+      }
+      if (environment.LINKEDIN_REDIRECT_URIS.length === 0) {
+        context.addIssue({
+          code: 'custom',
+          path: ['LINKEDIN_REDIRECT_URIS'],
+          message:
+            'LINKEDIN_REDIRECT_URIS is required outside development and test',
+        });
+      }
     }
 
     if (

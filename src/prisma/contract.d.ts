@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'b2c153e63204237c1f10bca1d2a27423e146b75f265c2f1921cec05a28110dde'>;
+  StorageHashBase<'f9adb0c3c0853a583d06f4829bdd074433fffe79a7b2db6a4158d78f40311655'>;
 export type ExecutionHash =
   ExecutionHashBase<'895454a9e103e2d2d26b18dfc240affb0a0e879fe491ca0a776281648367eff8'>;
 export type ProfileHash =
@@ -297,7 +297,7 @@ export type FieldOutputTypes = {
     readonly AuthIdentity: {
       readonly id: CodecTypes['pg/uuid@1']['output'];
       readonly userId: CodecTypes['pg/uuid@1']['output'];
-      readonly provider: 'GOOGLE';
+      readonly provider: 'GOOGLE' | 'LINKEDIN';
       readonly providerSubject: CodecTypes['pg/text@1']['output'];
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
@@ -485,7 +485,7 @@ export type FieldInputTypes = {
     readonly AuthIdentity: {
       readonly id: CodecTypes['pg/uuid@1']['input'];
       readonly userId: CodecTypes['pg/uuid@1']['input'];
-      readonly provider: 'GOOGLE';
+      readonly provider: 'GOOGLE' | 'LINKEDIN';
       readonly providerSubject: CodecTypes['pg/text@1']['input'];
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
@@ -673,7 +673,7 @@ export type StorageColumnTypes = {
     readonly authIdentity: {
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly id: CodecTypes['pg/uuid@1']['output'];
-      readonly provider: 'GOOGLE';
+      readonly provider: 'GOOGLE' | 'LINKEDIN';
       readonly providerSubject: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly userId: CodecTypes['pg/uuid@1']['output'];
@@ -861,7 +861,7 @@ export type StorageColumnInputTypes = {
     readonly authIdentity: {
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly id: CodecTypes['pg/uuid@1']['input'];
-      readonly provider: 'GOOGLE';
+      readonly provider: 'GOOGLE' | 'LINKEDIN';
       readonly providerSubject: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly userId: CodecTypes['pg/uuid@1']['input'];
@@ -1061,7 +1061,7 @@ export namespace Models {
   export type public_AuthIdentity = {
     id: CodecTypes['pg/uuid@1']['output'];
     userId: CodecTypes['pg/uuid@1']['output'];
-    provider: 'GOOGLE';
+    provider: 'GOOGLE' | 'LINKEDIN';
     providerSubject: CodecTypes['pg/text@1']['output'];
     createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
     updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
@@ -2591,7 +2591,7 @@ type ContractBase = Omit<
             };
             readonly AuthProvider: {
               readonly kind: 'valueSet';
-              readonly values: readonly ['GOOGLE'];
+              readonly values: readonly ['GOOGLE', 'LINKEDIN'];
             };
             readonly CategoryStatus: {
               readonly kind: 'valueSet';
@@ -4084,7 +4084,10 @@ type ContractBase = Omit<
           };
           readonly AuthProvider: {
             readonly codecId: 'pg/text@1';
-            readonly members: readonly [{ readonly name: 'GOOGLE'; readonly value: 'GOOGLE' }];
+            readonly members: readonly [
+              { readonly name: 'GOOGLE'; readonly value: 'GOOGLE' },
+              { readonly name: 'LINKEDIN'; readonly value: 'LINKEDIN' },
+            ];
           };
           readonly JobStatus: {
             readonly codecId: 'pg/text@1';

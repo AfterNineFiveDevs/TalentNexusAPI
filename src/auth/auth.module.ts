@@ -12,6 +12,7 @@ import { AuthSessionRepository } from './auth-session.repository';
 import { AuthService } from './auth.service';
 import { CookieOriginGuard } from './cookie-origin.guard';
 import { GoogleAuthService } from './google-auth.service';
+import { LinkedinAuthService } from './linkedin-auth.service';
 import { RefreshTokenCookieService } from './refresh-token-cookie.service';
 import { RefreshTokenService } from './refresh-token.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
@@ -27,6 +28,7 @@ import { LocalStrategy } from './strategies/local.strategy';
     AuthEmailService,
     CookieOriginGuard,
     GoogleAuthService,
+    LinkedinAuthService,
     RefreshTokenCookieService,
     RefreshTokenService,
     LocalStrategy,

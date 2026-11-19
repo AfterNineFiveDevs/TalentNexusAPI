@@ -15,6 +15,7 @@ import {
   type AuthenticatedUser,
   ForgotPasswordRequestDto,
   GoogleAuthRequestDto,
+  LinkedinAuthRequestDto,
   LoginRequestDto,
   RefreshResponseDto,
   ResendVerificationRequestDto,
@@ -113,6 +114,21 @@ export class AuthController {
     @Res({ passthrough: true }) response: Response,
   ) {
     const session = await this.authService.loginWithGoogle(dto);
+    this.refreshTokenCookie.write(response, session.refreshToken);
+    return session.response;
+  }
+
+  @Public()
+  @UseGuards(CookieOriginGuard, ThrottlerGuard)
+  @Throttle({ default: { limit: 10, ttl: 900_000 } })
+  @HttpCode(HttpStatus.OK)
+  @Post('linkedin')
+  @ApiBody({ type: LinkedinAuthRequestDto })
+  async linkedin(
+    @Body() dto: LinkedinAuthRequestDto,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const session = await this.authService.loginWithLinkedIn(dto);
     this.refreshTokenCookie.write(response, session.refreshToken);
     return session.response;
   }

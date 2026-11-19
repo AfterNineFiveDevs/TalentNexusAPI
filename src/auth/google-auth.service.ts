@@ -4,7 +4,8 @@ import { API_ERROR_MESSAGES } from '@talent-nexus/contracts';
 import { OAuth2Client } from 'google-auth-library';
 import type { EnvironmentVariables } from '../config/environment.js';
 
-export interface VerifiedGoogleIdentity {
+/** A user identity confirmed by an outside login provider. */
+export interface VerifiedOAuthIdentity {
   subject: string;
   email: string;
   name?: string;
@@ -19,7 +20,7 @@ export class GoogleAuthService {
     this.audiences = config.getOrThrow('GOOGLE_CLIENT_IDS', { infer: true });
   }
 
-  async verify(credential: string): Promise<VerifiedGoogleIdentity> {
+  async verify(credential: string): Promise<VerifiedOAuthIdentity> {
     try {
       const ticket = await this.client.verifyIdToken({
         idToken: credential,
