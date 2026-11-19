@@ -100,6 +100,10 @@
               {
                 "name": "GOOGLE",
                 "value": "GOOGLE"
+              },
+              {
+                "name": "LINKEDIN",
+                "value": "LINKEDIN"
               }
             ]
           },
@@ -2869,8 +2873,8 @@
             "authIdentity": {
               "checks": [
                 {
-                  "expression": "\"provider\" IN ('GOOGLE')",
-                  "name": "authIdentity_provider_check_ced8a431",
+                  "expression": "\"provider\" IN ('GOOGLE', 'LINKEDIN')",
+                  "name": "authIdentity_provider_check_60ddbd51",
                   "prefix": "authIdentity_provider_check"
                 }
               ],
@@ -4185,7 +4189,8 @@
             "AuthProvider": {
               "kind": "valueSet",
               "values": [
-                "GOOGLE"
+                "GOOGLE",
+                "LINKEDIN"
               ]
             },
             "CategoryStatus": {
@@ -4248,7 +4253,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "b2c153e63204237c1f10bca1d2a27423e146b75f265c2f1921cec05a28110dde"
+    "storageHash": "f9adb0c3c0853a583d06f4829bdd074433fffe79a7b2db6a4158d78f40311655"
   },
   "execution": {
     "executionHash": "895454a9e103e2d2d26b18dfc240affb0a0e879fe491ca0a776281648367eff8",

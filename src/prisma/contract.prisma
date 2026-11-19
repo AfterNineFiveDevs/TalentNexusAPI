@@ -220,6 +220,7 @@ enum AuthProvider {
   @@type("pg/text@1")
 
   GOOGLE
+  LINKEDIN
 }
 
 enum JobStatus {

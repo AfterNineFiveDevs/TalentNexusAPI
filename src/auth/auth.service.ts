@@ -6,6 +6,7 @@ import {
   authenticatedUserSchema,
   type AuthenticatedUser,
   type GoogleAuthRequest,
+  type LinkedinAuthRequest,
   type LoginResponse,
   type RefreshResponse,
   type SignUpRequest,
@@ -17,8 +18,13 @@ import { AuthActionTokenService } from './auth-action-token.service';
 import {
   AuthIdentityRepository,
   type AuthIdentityStore,
+  type OAuthProvider,
 } from './auth-identity.repository.js';
-import { GoogleAuthService } from './google-auth.service.js';
+import {
+  GoogleAuthService,
+  type VerifiedOAuthIdentity,
+} from './google-auth.service.js';
+import { LinkedinAuthService } from './linkedin-auth.service.js';
 import { RefreshTokenService } from './refresh-token.service';
 
 export interface IssuedAuthSession<TResponse extends LoginResponse> {
@@ -34,6 +40,7 @@ export class AuthService {
     private readonly refreshTokens: RefreshTokenService,
     private readonly actionTokens: AuthActionTokenService,
     private readonly googleAuth: GoogleAuthService,
+    private readonly linkedinAuth: LinkedinAuthService,
     private readonly authIdentities: AuthIdentityRepository,
   ) {}
 
@@ -80,38 +87,22 @@ export class AuthService {
     dto: GoogleAuthRequest,
   ): Promise<IssuedAuthSession<LoginResponse>> {
     const identity = await this.googleAuth.verify(dto.credential);
-    let user: AuthenticatedUser;
+    return this.loginWithProvider(
+      'GOOGLE',
+      identity,
+      API_ERROR_MESSAGES.GOOGLE_ACCOUNT_LINK_CONFLICT,
+    );
+  }
 
-    try {
-      user = await this.authIdentities.transaction((store) =>
-        this.resolveGoogleUser(store, identity),
-      );
-    } catch (error: unknown) {
-      if (error instanceof ConflictException) {
-        throw error;
-      }
-
-      const existing = await this.authIdentities.findGoogleIdentity(
-        identity.subject,
-      );
-      if (!existing) {
-        const emailOwner = await this.authIdentities.findUserByEmail(
-          identity.email,
-        );
-        if (
-          emailOwner &&
-          (await this.authIdentities.findGoogleIdentityByUserId(emailOwner.id))
-        ) {
-          throw new ConflictException(
-            API_ERROR_MESSAGES.GOOGLE_ACCOUNT_LINK_CONFLICT,
-          );
-        }
-        throw error;
-      }
-      user = authenticatedUserSchema.parse(existing.user);
-    }
-
-    return this.login(user);
+  async loginWithLinkedIn(
+    dto: LinkedinAuthRequest,
+  ): Promise<IssuedAuthSession<LoginResponse>> {
+    const identity = await this.linkedinAuth.verify(dto);
+    return this.loginWithProvider(
+      'LINKEDIN',
+      identity,
+      API_ERROR_MESSAGES.LINKEDIN_ACCOUNT_LINK_CONFLICT,
+    );
   }
 
   async refresh(
@@ -144,39 +135,86 @@ export class AuthService {
     };
   }
 
-  private async resolveGoogleUser(
+  /**
+   * Finds or creates the user for a verified outside identity, then logs in.
+   * If two requests race and the transaction fails, read the winner's row.
+   */
+  private async loginWithProvider(
+    provider: OAuthProvider,
+    identity: VerifiedOAuthIdentity,
+    conflictMessage: string,
+  ): Promise<IssuedAuthSession<LoginResponse>> {
+    let user: AuthenticatedUser;
+
+    try {
+      user = await this.authIdentities.transaction((store) =>
+        this.resolveOAuthUser(store, provider, identity, conflictMessage),
+      );
+    } catch (error: unknown) {
+      if (error instanceof ConflictException) {
+        throw error;
+      }
+
+      const existing = await this.authIdentities.findIdentity(
+        provider,
+        identity.subject,
+      );
+      if (!existing) {
+        const emailOwner = await this.authIdentities.findUserByEmail(
+          identity.email,
+        );
+        if (
+          emailOwner &&
+          (await this.authIdentities.findIdentityByUserId(
+            provider,
+            emailOwner.id,
+          ))
+        ) {
+          throw new ConflictException(conflictMessage);
+        }
+        throw error;
+      }
+      user = authenticatedUserSchema.parse(existing.user);
+    }
+
+    return this.login(user);
+  }
+
+  private async resolveOAuthUser(
     store: AuthIdentityStore,
-    identity: { subject: string; email: string; name?: string },
+    provider: OAuthProvider,
+    identity: VerifiedOAuthIdentity,
+    conflictMessage: string,
   ): Promise<AuthenticatedUser> {
-    const linkedIdentity = await store.findGoogleIdentity(identity.subject);
+    const linkedIdentity = await store.findIdentity(provider, identity.subject);
     if (linkedIdentity) {
       return authenticatedUserSchema.parse(linkedIdentity.user);
     }
 
     const existingUser = await store.findUserByEmail(identity.email);
     if (existingUser) {
-      const otherGoogleIdentity = await store.findGoogleIdentityByUserId(
+      const otherIdentity = await store.findIdentityByUserId(
+        provider,
         existingUser.id,
       );
-      if (otherGoogleIdentity) {
-        throw new ConflictException(
-          API_ERROR_MESSAGES.GOOGLE_ACCOUNT_LINK_CONFLICT,
-        );
+      if (otherIdentity) {
+        throw new ConflictException(conflictMessage);
       }
 
-      await store.createGoogleIdentity(existingUser.id, identity.subject);
+      await store.createIdentity(provider, existingUser.id, identity.subject);
       if (!existingUser.verifiedAt) {
         await store.markUserVerified(existingUser.id, new Date().toISOString());
       }
       return authenticatedUserSchema.parse(existingUser);
     }
 
-    const createdUser = await store.createGoogleUser({
+    const createdUser = await store.createOAuthUser({
+      provider,
       email: identity.email,
       ...(identity.name ? { name: identity.name } : {}),
       now: new Date().toISOString(),
     });
-    await store.createGoogleIdentity(createdUser.id, identity.subject);
+    await store.createIdentity(provider, createdUser.id, identity.subject);
     return authenticatedUserSchema.parse(createdUser);
   }
 }

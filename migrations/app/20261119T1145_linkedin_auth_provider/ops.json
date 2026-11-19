@@ -1,0 +1,86 @@
+[
+  {
+    "id": "dropCheckConstraint.authIdentity.authIdentity_provider_check_ced8a431",
+    "label": "Drop check constraint \"authIdentity_provider_check_ced8a431\" on \"authIdentity\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "authIdentity_provider_check_ced8a431",
+        "table": "authIdentity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"authIdentity_provider_check_ced8a431\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "authIdentity_provider_check_ced8a431",
+          "public",
+          "\"public\".\"authIdentity\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop check constraint \"authIdentity_provider_check_ced8a431\"",
+        "sql": "ALTER TABLE \"public\".\"authIdentity\" DROP CONSTRAINT \"authIdentity_provider_check_ced8a431\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"authIdentity_provider_check_ced8a431\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "authIdentity_provider_check_ced8a431",
+          "public",
+          "\"public\".\"authIdentity\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.authIdentity.authIdentity_provider_check_60ddbd51",
+    "label": "Add check constraint \"authIdentity_provider_check_60ddbd51\" on \"authIdentity\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "authIdentity_provider_check_60ddbd51",
+        "table": "authIdentity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"authIdentity_provider_check_60ddbd51\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "authIdentity_provider_check_60ddbd51",
+          "public",
+          "\"public\".\"authIdentity\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"authIdentity_provider_check_60ddbd51\"",
+        "sql": "ALTER TABLE \"public\".\"authIdentity\" ADD CONSTRAINT \"authIdentity_provider_check_60ddbd51\" CHECK (\"provider\" IN ('GOOGLE', 'LINKEDIN'))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"authIdentity_provider_check_60ddbd51\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "authIdentity_provider_check_60ddbd51",
+          "public",
+          "\"public\".\"authIdentity\""
+        ]
+      }
+    ]
+  }
+]

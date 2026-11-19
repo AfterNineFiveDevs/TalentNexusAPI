@@ -11,6 +11,9 @@ const staging = {
   WEB_APP_URL: 'http://localhost:3000',
   CORS_ORIGIN: 'http://localhost:3000,http://localhost:5173',
   GOOGLE_CLIENT_IDS: 'fixture.apps.googleusercontent.com',
+  LINKEDIN_CLIENT_ID: 'fixture-linkedin-client',
+  LINKEDIN_CLIENT_SECRET: 'fixture-linkedin-secret',
+  LINKEDIN_REDIRECT_URIS: 'http://localhost:3000/auth/linkedin/callback',
   EMAIL_PROVIDER: 'brevo',
   BREVO_API_KEY: 'fixture-key',
   MAIL_FROM_EMAIL: 'test@example.com',
@@ -55,5 +58,15 @@ describe('Staging frontend URL validation', () => {
         BREVO_API_URL: 'http://localhost:4010',
       }),
     ).toThrow('BREVO_API_URL');
+  });
+
+  it('requires LinkedIn credentials outside development and test', () => {
+    expect(() =>
+      validateEnvironment({
+        ...staging,
+        STAGING_ALLOW_LOCALHOST: 'true',
+        LINKEDIN_CLIENT_SECRET: '',
+      }),
+    ).toThrow('LINKEDIN_CLIENT_SECRET');
   });
 });

@@ -1,7 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { db } from '../prisma/db.js';
 
-const googleProvider = 'GOOGLE' as const;
+/** Outside login providers stored in `authIdentity.provider`. */
+export type OAuthProvider = 'GOOGLE' | 'LINKEDIN';
+
+/** Value saved in `user.signUpMethod` for each provider. */
+const signUpMethodByProvider = {
+  GOOGLE: 'GOOGLE',
+  LINKEDIN: 'LinkedIn',
+} as const satisfies Record<OAuthProvider, string>;
 
 interface StoredUser {
   id: string;
@@ -11,7 +18,7 @@ interface StoredUser {
   verifiedAt: string | null;
 }
 
-export interface StoredGoogleIdentity {
+export interface StoredOAuthIdentity {
   id: string;
   userId: string;
   providerSubject: string;
@@ -19,29 +26,37 @@ export interface StoredGoogleIdentity {
 }
 
 export interface AuthIdentityStore {
-  findGoogleIdentity(subject: string): Promise<StoredGoogleIdentity | null>;
-  findGoogleIdentityByUserId(
+  findIdentity(
+    provider: OAuthProvider,
+    subject: string,
+  ): Promise<StoredOAuthIdentity | null>;
+  findIdentityByUserId(
+    provider: OAuthProvider,
     userId: string,
-  ): Promise<StoredGoogleIdentity | null>;
+  ): Promise<StoredOAuthIdentity | null>;
   findUserByEmail(email: string): Promise<StoredUser | null>;
-  createGoogleUser(input: {
+  createOAuthUser(input: {
+    provider: OAuthProvider;
     email: string;
     name?: string;
     now: string;
   }): Promise<StoredUser>;
-  createGoogleIdentity(userId: string, subject: string): Promise<void>;
+  createIdentity(
+    provider: OAuthProvider,
+    userId: string,
+    subject: string,
+  ): Promise<void>;
   markUserVerified(userId: string, now: string): Promise<void>;
 }
 
 class PrismaAuthIdentityStore implements AuthIdentityStore {
   constructor(private readonly prisma: typeof db.orm.public) {}
 
-  async findGoogleIdentity(
+  async findIdentity(
+    provider: OAuthProvider,
     subject: string,
-  ): Promise<StoredGoogleIdentity | null> {
-    const identity = await this.prisma.AuthIdentity.where({
-      provider: googleProvider,
-    })
+  ): Promise<StoredOAuthIdentity | null> {
+    const identity = await this.prisma.AuthIdentity.where({ provider })
       .where({ providerSubject: subject })
       .include('user', (user) =>
         user.select('id', 'email', 'role', 'name', 'verifiedAt'),
@@ -50,11 +65,12 @@ class PrismaAuthIdentityStore implements AuthIdentityStore {
     return identity?.user ? { ...identity, user: identity.user } : null;
   }
 
-  async findGoogleIdentityByUserId(
+  async findIdentityByUserId(
+    provider: OAuthProvider,
     userId: string,
-  ): Promise<StoredGoogleIdentity | null> {
+  ): Promise<StoredOAuthIdentity | null> {
     const identity = await this.prisma.AuthIdentity.where({ userId })
-      .where({ provider: googleProvider })
+      .where({ provider })
       .include('user', (user) =>
         user.select('id', 'email', 'role', 'name', 'verifiedAt'),
       )
@@ -68,7 +84,12 @@ class PrismaAuthIdentityStore implements AuthIdentityStore {
       .first();
   }
 
-  createGoogleUser(input: { email: string; name?: string; now: string }) {
+  createOAuthUser(input: {
+    provider: OAuthProvider;
+    email: string;
+    name?: string;
+    now: string;
+  }) {
     return this.prisma.User.select(
       'id',
       'email',
@@ -81,15 +102,19 @@ class PrismaAuthIdentityStore implements AuthIdentityStore {
       name: input.name ?? null,
       role: 'TALENT',
       termAccepted: true,
-      signUpMethod: 'GOOGLE',
+      signUpMethod: signUpMethodByProvider[input.provider],
       verifiedAt: input.now,
     });
   }
 
-  async createGoogleIdentity(userId: string, subject: string): Promise<void> {
+  async createIdentity(
+    provider: OAuthProvider,
+    userId: string,
+    subject: string,
+  ): Promise<void> {
     await this.prisma.AuthIdentity.create({
       userId,
-      provider: googleProvider,
+      provider,
       providerSubject: subject,
     });
   }
