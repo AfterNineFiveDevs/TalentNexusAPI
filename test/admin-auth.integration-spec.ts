@@ -24,6 +24,7 @@ import {
   type AdminPrincipal,
 } from '../src/admin-auth/admin-auth.service';
 import { AdminCryptoService } from '../src/admin-auth/admin-crypto.service';
+import { ADMIN_AUDIENCE, PRODUCT_AUDIENCE } from '../src/auth/access-token';
 import { configureApiResponseHandling } from '../src/common/http/configure-api-response-handling';
 import { applyZodSchemasToSwagger } from '../src/common/swagger/zod-swagger';
 import { db } from '../src/prisma/db';
@@ -150,6 +151,17 @@ async function loginChallenge(email = actor.email) {
   return result.body.data.challengeToken;
 }
 
+async function loginProduct() {
+  const response = await request(app.getHttpServer())
+    .post('/api/v1/auth/login')
+    .send({ email: actor.email, password })
+    .expect(200);
+  return {
+    token: response.body.data.access_token,
+    cookie: response.headers['set-cookie'][0].split(';')[0],
+  };
+}
+
 beforeAll(async () => {
   const module = await Test.createTestingModule({
     imports: [AppModule],
@@ -255,6 +267,76 @@ describe('Admin authentication through HTTP and PostgreSQL', () => {
       .get('/api/v1/admin/jobs')
       .auth(normal.body.data.access_token, { type: 'bearer' })
       .expect(403);
+  });
+  it('separates product and admin profiles even for the same administrator', async () => {
+    const jwt = app.get(JwtService);
+    const product = await loginProduct();
+    expect(jwt.decode<{ aud: string }>(product.token).aud).toBe(
+      PRODUCT_AUDIENCE,
+    );
+    const legacy = jwt.sign({
+      sub: actor.id,
+      email: actor.email,
+      role: 'ADMIN',
+    });
+    for (const token of [product.token, legacy]) {
+      const profile = await request(app.getHttpServer())
+        .get('/api/v1/auth/profile')
+        .auth(token, { type: 'bearer' })
+        .expect(200);
+      expect(profile.body.data).toEqual({
+        id: actor.id,
+        email: actor.email,
+        role: 'ADMIN',
+      });
+      await request(app.getHttpServer())
+        .get(`${base}/profile`)
+        .auth(token, { type: 'bearer' })
+        .expect(403);
+    }
+    for (const path of [
+      '/api/v1/auth/profile',
+      '/api/v1/me/category-subscriptions',
+    ]) {
+      await request(app.getHttpServer())
+        .get(path)
+        .auth(actorToken, { type: 'bearer' })
+        .expect(403);
+    }
+    await request(app.getHttpServer())
+      .get('/api/v1/me/category-subscriptions')
+      .auth(product.token, { type: 'bearer' })
+      .expect(403);
+    const refreshed = await request(app.getHttpServer())
+      .post('/api/v1/auth/refresh')
+      .set('Cookie', product.cookie)
+      .expect(200);
+    expect(
+      jwt.decode<{ aud: string }>(refreshed.body.data.access_token).aud,
+    ).toBe(PRODUCT_AUDIENCE);
+  });
+  it('rejects malformed admin claims and unsupported audiences on either profile', async () => {
+    const jwt = app.get(JwtService);
+    for (const claims of [
+      { aud: ADMIN_AUDIENCE, sid: actor.adminSessionId, amr: ['pwd'] },
+      { aud: ADMIN_AUDIENCE, sid: 'invalid', amr: ['pwd', 'mfa'] },
+      { sid: actor.adminSessionId, amr: ['pwd', 'mfa'] },
+      { aud: PRODUCT_AUDIENCE, sid: actor.adminSessionId },
+      { aud: 'other-service' },
+    ]) {
+      const token = jwt.sign({
+        sub: actor.id,
+        email: actor.email,
+        role: 'ADMIN',
+        ...claims,
+      });
+      for (const path of ['/api/v1/auth/profile', `${base}/profile`]) {
+        await request(app.getHttpServer())
+          .get(path)
+          .auth(token, { type: 'bearer' })
+          .expect(401);
+      }
+    }
   });
   it('requires MFA after password and consumes recovery codes once under concurrent verification', async () => {
     const challengeToken = await loginChallenge();
@@ -500,17 +582,91 @@ describe('Admin authentication through HTTP and PostgreSQL', () => {
       .expect(401);
     await post('logout').set('Cookie', actorCookie).expect(204);
   });
-  it('revokes all sessions on logout-all', async () => {
+  it('revokes all admin sessions and challenges while preserving product sessions', async () => {
+    const product = await loginProduct();
     const challengeToken = await loginChallenge();
     const other = await post('mfa/recovery', {
       challengeToken,
       recoveryCode: actorCodes[0],
     }).expect(200);
+    const pending = await loginChallenge();
     await post('logout-all').auth(actorToken, { type: 'bearer' }).expect(204);
     await request(app.getHttpServer())
       .get('/api/v1/admin/jobs')
       .auth(other.body.data.access_token, { type: 'bearer' })
       .expect(401);
+    await post('mfa/recovery', {
+      challengeToken: pending,
+      recoveryCode: actorCodes[1],
+    }).expect(401);
+    await request(app.getHttpServer())
+      .post('/api/v1/auth/refresh')
+      .set('Cookie', product.cookie)
+      .expect(200);
+  });
+  it('revokes product sessions while preserving active admin sessions and challenges', async () => {
+    const product = await loginProduct();
+    const otherProduct = await loginProduct();
+    const challengeToken = await loginChallenge();
+    await request(app.getHttpServer())
+      .post('/api/v1/auth/logout-all')
+      .auth(actorToken, { type: 'bearer' })
+      .expect(403);
+    await post('logout-all')
+      .auth(product.token, { type: 'bearer' })
+      .expect(403);
+    await request(app.getHttpServer())
+      .post('/api/v1/auth/logout-all')
+      .auth(product.token, { type: 'bearer' })
+      .expect(204);
+    for (const cookie of [product.cookie, otherProduct.cookie]) {
+      await request(app.getHttpServer())
+        .post('/api/v1/auth/refresh')
+        .set('Cookie', cookie)
+        .expect(401);
+    }
+    await request(app.getHttpServer())
+      .get('/api/v1/auth/profile')
+      .auth(product.token, { type: 'bearer' })
+      .expect(200);
+    await request(app.getHttpServer())
+      .get(`${base}/profile`)
+      .auth(actorToken, { type: 'bearer' })
+      .expect(200);
+    await post('mfa/recovery', {
+      challengeToken,
+      recoveryCode: actorCodes[0],
+    }).expect(200);
+  });
+  it('does not revoke a session when its refresh cookie is sent to the other logout endpoint', async () => {
+    const product = await loginProduct();
+    await post('logout')
+      .set(
+        'Cookie',
+        product.cookie.replace(
+          'talent_nexus_refresh=',
+          'talent_nexus_admin_refresh=',
+        ),
+      )
+      .expect(204);
+    await request(app.getHttpServer())
+      .post('/api/v1/auth/logout')
+      .set(
+        'Cookie',
+        actorCookie.replace(
+          'talent_nexus_admin_refresh=',
+          'talent_nexus_refresh=',
+        ),
+      )
+      .expect(204);
+    await request(app.getHttpServer())
+      .post('/api/v1/auth/refresh')
+      .set('Cookie', product.cookie)
+      .expect(200);
+    await request(app.getHttpServer())
+      .get(`${base}/profile`)
+      .auth(actorToken, { type: 'bearer' })
+      .expect(200);
   });
   it('regenerates recovery codes after fresh proof and invalidates the previous set', async () => {
     const next = await post('mfa/recovery-codes/regenerate', {
@@ -564,7 +720,8 @@ describe('Admin authentication through HTTP and PostgreSQL', () => {
     }).expect(401);
     expect(session.id).toBe(actor.id);
   });
-  it('retains MFA through ordinary password reset and revokes admin sessions', async () => {
+  it('retains MFA through ordinary password reset and revokes both session types', async () => {
+    const product = await loginProduct();
     const oldChallenge = await loginChallenge();
     const token = adminCrypto.token();
     await db.orm.public.AuthActionToken.create({
@@ -584,6 +741,10 @@ describe('Admin authentication through HTTP and PostgreSQL', () => {
     await request(app.getHttpServer())
       .get(`${base}/profile`)
       .auth(actorToken, { type: 'bearer' })
+      .expect(401);
+    await request(app.getHttpServer())
+      .post('/api/v1/auth/refresh')
+      .set('Cookie', product.cookie)
       .expect(401);
     await post('mfa/recovery', {
       challengeToken: oldChallenge,

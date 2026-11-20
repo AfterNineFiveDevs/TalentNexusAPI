@@ -20,6 +20,7 @@ import {
 } from './auth-identity.repository.js';
 import { GoogleAuthService } from './google-auth.service.js';
 import { RefreshTokenService } from './refresh-token.service';
+import { PRODUCT_AUDIENCE } from './access-token';
 
 export interface IssuedAuthSession<TResponse extends LoginResponse> {
   refreshToken: string;
@@ -139,7 +140,9 @@ export class AuthService {
       role: user.role,
     };
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: this.jwtService.sign(payload, {
+        audience: PRODUCT_AUDIENCE,
+      }),
       ...user,
     };
   }

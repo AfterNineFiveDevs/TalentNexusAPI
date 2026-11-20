@@ -37,7 +37,7 @@ import {
 import type { Request, Response } from 'express';
 import { Public } from '../@decorators/public.decorator';
 import { CurrentUser } from '../@decorators/current-user.decorator';
-import { AdminGuard } from '../auth/admin.guard';
+import { AdminOnly } from '../auth/admin-only.decorator';
 import { CookieOriginGuard } from '../auth/cookie-origin.guard';
 import { AdminAuthService, type AdminPrincipal } from './admin-auth.service';
 import { AdminCookieService } from './admin-cookie.service';
@@ -191,7 +191,7 @@ export class AdminAuthController {
   }
 
   @Get('profile')
-  @UseGuards(AdminGuard)
+  @AdminOnly()
   @ApiBearerAuth()
   @ApiResponse({ status: 200, schema: result(adminProfileSchema) })
   profile(@CurrentUser() user: AdminPrincipal) {
@@ -200,7 +200,7 @@ export class AdminAuthController {
 
   @Post('logout-all')
   @HttpCode(204)
-  @UseGuards(AdminGuard)
+  @AdminOnly()
   @ApiBearerAuth()
   async logoutAll(
     @CurrentUser() user: AdminPrincipal,
@@ -216,7 +216,7 @@ export class AdminAuthController {
     schema: result(z.object({ recoveryCodes: z.array(z.string()).length(10) })),
   })
   @HttpCode(200)
-  @UseGuards(AdminGuard)
+  @AdminOnly()
   @ApiBearerAuth()
   @ApiBody({ type: AdminReauthenticateDto })
   regenerate(

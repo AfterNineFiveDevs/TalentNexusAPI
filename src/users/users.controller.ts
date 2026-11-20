@@ -1,10 +1,10 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { AdminGuard } from '../auth/admin.guard';
+import { AdminOnly } from '../auth/admin-only.decorator';
 import { UsersService } from './users.service';
 @ApiTags('Users')
 @ApiBearerAuth()
-@UseGuards(AdminGuard)
+@AdminOnly()
 @Controller('users')
 export class UsersController {
   constructor(private readonly users: UsersService) {}

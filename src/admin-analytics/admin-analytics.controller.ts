@@ -1,10 +1,4 @@
-import {
-  Controller,
-  Get,
-  Query,
-  UseGuards,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Controller, Get, Query, UseInterceptors } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -16,13 +10,13 @@ import {
   AdminAnalyticsQueryDto,
   adminAnalyticsOverviewSchema,
 } from '@talent-nexus/contracts';
-import { AdminGuard } from '../auth/admin.guard';
+import { AdminOnly } from '../auth/admin-only.decorator';
 import { AdminNoStoreInterceptor } from '../admin-auth/admin-no-store.interceptor';
 import { detailSchema } from '../common/swagger/response-schemas';
 import { AdminAnalyticsService } from './admin-analytics.service';
 @ApiTags('Admin analytics')
 @ApiBearerAuth()
-@UseGuards(AdminGuard)
+@AdminOnly()
 @UseInterceptors(AdminNoStoreInterceptor)
 @ApiResponse({
   status: 400,

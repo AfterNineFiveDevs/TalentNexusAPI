@@ -119,7 +119,8 @@ export class AuthController {
 
   @Get('profile')
   getProfile(@CurrentUser() user: AuthenticatedUser) {
-    return user;
+    const { id, email, role } = user;
+    return { id, email, role };
   }
 
   @Public()

@@ -7,7 +7,6 @@ import {
   Patch,
   Post,
   Query,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import {
@@ -26,7 +25,7 @@ import {
   crawlerSourceSchema,
   crawlerRunSchema,
 } from '@talent-nexus/contracts';
-import { AdminGuard } from '../auth/admin.guard';
+import { AdminOnly } from '../auth/admin-only.decorator';
 import { AdminNoStoreInterceptor } from '../admin-auth/admin-no-store.interceptor';
 import { detailSchema, pageSchema } from '../common/swagger/response-schemas';
 import { z } from 'zod';
@@ -35,7 +34,7 @@ import { CrawlerControlService } from './crawler.service';
 
 @ApiTags('Admin crawler')
 @ApiBearerAuth()
-@UseGuards(AdminGuard)
+@AdminOnly()
 @UseInterceptors(AdminNoStoreInterceptor)
 @ApiResponse({
   status: 400,

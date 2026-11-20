@@ -14,9 +14,16 @@ revoke pending invitations and disable other admins. Self-disable is rejected;
 concurrent access changes cannot remove every active admin.
 
 Admin access requires password plus authenticator TOTP or a one-use recovery code.
-The normal `/auth/login`, `/auth/google` and `/auth/refresh` flows never establish
-admin MFA assurance, even when their returned role is ADMIN. Legacy role-only
-JWTs are rejected by every admin guard. Accounts retain ordinary product login.
+Accounts retain ordinary product login, including accounts with role `ADMIN`.
+`/auth/login`, `/auth/google`, and `/auth/refresh` issue access tokens with
+`aud: talentnexus-product`. Existing audience-less product tokens work until
+expiry if they contain no admin session or MFA claims. Use a product token for
+`/auth/profile` and other protected product routes.
+
+Admin sign-in and refresh issue access tokens with `aud: talentnexus-admin`.
+Use them for `/admin/auth/profile`, `/users`, and other protected admin routes.
+A valid bearer token for the other route context returns 403. Missing, invalid,
+expired, or revoked admin credentials return 401 on protected admin routes.
 
 Only an active membership, current ADMIN role and an unrevoked MFA-authenticated
 session grant access. Checks run on every admin request. Disabling admin access
@@ -42,7 +49,7 @@ session. Successful admin authentication responses use `Cache-Control: no-store`
 | POST `/admin/auth/refresh` | Admin cookie | Rotated cookie and access token |
 | GET `/admin/auth/profile` | Admin bearer token | Safe ID, email, name, role and MFA status |
 | POST `/admin/auth/logout` | Admin cookie | 204; idempotent; revokes current session |
-| POST `/admin/auth/logout-all` | Admin bearer token | 204; revokes all account sessions and challenges |
+| POST `/admin/auth/logout-all` | Admin bearer token | 204; revokes all admin sessions and pending admin challenges |
 | POST `/admin/auth/mfa/recovery-codes/regenerate` | Admin bearer token, `password`, exactly one `code` or `recoveryCode` | Ten replacement codes; invalidates old set |
 
 A session response is wrapped in `data` and contains:
@@ -62,6 +69,10 @@ Enrollment completion adds `recoveryCodes: string[]`. Display/save these once;
 there is no endpoint to retrieve them later. Never persist or log setup secrets,
 challenge tokens, invitation tokens, recovery codes or JWTs in frontend storage.
 The backend returns the authenticator URI; rendering its QR code is frontend work.
+
+Product `/auth/logout` and `/auth/logout-all` revoke product refresh sessions
+only. Admin logout endpoints revoke admin sessions only. Password reset revokes
+both session types. Already-issued product access tokens remain valid until expiry.
 
 An invitation lasts 24 hours. Links use `${ADMIN_APP_URL}/accept-invitation#token=…`;
 the frontend reads the fragment and submits the token in a POST body. Resending

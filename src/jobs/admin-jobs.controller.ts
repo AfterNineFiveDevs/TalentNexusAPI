@@ -8,7 +8,6 @@ import {
   Patch,
   Post,
   Query,
-  UseGuards,
   applyDecorators,
 } from '@nestjs/common';
 import {
@@ -37,7 +36,7 @@ import {
   adminJobSummarySchema,
 } from '@talent-nexus/contracts';
 import { CurrentUser } from '../@decorators/current-user.decorator';
-import { AdminGuard } from '../auth/admin.guard';
+import { AdminOnly } from '../auth/admin-only.decorator';
 import { detailSchema } from '../common/swagger/response-schemas';
 import { JobsService } from './jobs.service';
 
@@ -115,7 +114,7 @@ const jobFilterQueries = () =>
   status: 409,
   description: 'Stale version or invalid lifecycle transition',
 })
-@UseGuards(AdminGuard)
+@AdminOnly()
 @Controller('admin/jobs')
 export class AdminJobsController {
   constructor(private readonly jobs: JobsService) {}

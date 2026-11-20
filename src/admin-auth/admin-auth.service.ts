@@ -27,6 +27,7 @@ import {
 } from './admin-auth.repository';
 import { AdminCryptoService } from './admin-crypto.service';
 import { AdminEmailService } from './admin-email.service';
+import { ADMIN_AUDIENCE } from '../auth/access-token';
 
 export interface AdminPrincipal {
   id: string;
@@ -210,7 +211,7 @@ export class AdminAuthService {
   logoutAll(actor: AdminPrincipal) {
     return this.repository.locked(async (store) => {
       await this.requireActor(store, actor);
-      await store.revokeSessions(actor.id);
+      await store.revokeSessions(actor.id, 'ADMIN');
       await store.invalidateChallenges(actor.id);
     });
   }
@@ -629,7 +630,7 @@ export class AdminAuthService {
           role: 'ADMIN',
           sid: session.id,
           amr: ['pwd', 'mfa'],
-          aud: 'talentnexus-admin',
+          aud: ADMIN_AUDIENCE,
         },
         { expiresIn: 900 },
       ),

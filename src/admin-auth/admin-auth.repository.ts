@@ -219,8 +219,11 @@ export class AdminAuthStore {
         revocationReason: reason,
       });
   }
-  revokeSessions(userId: string) {
-    return this.orm.AuthSession.where({ userId })
+  revokeSessions(userId: string, purpose?: 'ADMIN') {
+    return this.orm.AuthSession.where({
+      userId,
+      ...(purpose ? { purpose } : {}),
+    })
       .where((s) => s.revokedAt.isNull())
       .updateAndCount({
         revokedAt: new Date().toISOString(),

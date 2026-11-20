@@ -101,7 +101,7 @@ export class AuthSessionRepository extends PrismaAuthSessionStore {
     refreshTokenHash: string;
     now: string;
   }): Promise<void> {
-    await db.orm.public.AuthSession.where({ id: input.id })
+    await db.orm.public.AuthSession.where({ id: input.id, purpose: 'USER' })
       .where({ refreshTokenHash: input.refreshTokenHash })
       .where((session) => session.revokedAt.isNull())
       .update({
@@ -117,12 +117,9 @@ export class AuthSessionRepository extends PrismaAuthSessionStore {
           .returnsRow({ locked: 'pg/text@1' })
           .build(),
       );
-      await tx.orm.public.AuthSession.where({ userId })
+      await tx.orm.public.AuthSession.where({ userId, purpose: 'USER' })
         .where((s) => s.revokedAt.isNull())
         .updateAndCount({ revokedAt: now, revocationReason: 'LOGOUT_ALL' });
-      await tx.orm.public.AdminChallenge.where({ userId })
-        .where((c) => c.consumedAt.isNull())
-        .updateAndCount({ consumedAt: now, secretCiphertext: null });
     });
   }
 }

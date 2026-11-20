@@ -9,7 +9,6 @@ import {
   Post,
   Put,
   Query,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import {
@@ -35,7 +34,7 @@ import {
   categorySubscriptionSchema,
   type AuthenticatedUser,
 } from '@talent-nexus/contracts';
-import { AdminGuard } from '../auth/admin.guard';
+import { AdminOnly } from '../auth/admin-only.decorator';
 import { Public } from '../@decorators/public.decorator';
 import { CurrentUser } from '../@decorators/current-user.decorator';
 import { AdminNoStoreInterceptor } from '../admin-auth/admin-no-store.interceptor';
@@ -44,7 +43,7 @@ import { CategoriesService } from './categories.service';
 
 @ApiTags('Admin categories')
 @ApiBearerAuth()
-@UseGuards(AdminGuard)
+@AdminOnly()
 @UseInterceptors(AdminNoStoreInterceptor)
 @ApiResponse({
   status: 400,

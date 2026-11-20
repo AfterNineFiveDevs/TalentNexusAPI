@@ -6,7 +6,6 @@ import {
   Param,
   Post,
   Query,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import {
@@ -28,7 +27,7 @@ import {
 import { z } from 'zod';
 import { AdminNoStoreInterceptor } from './admin-no-store.interceptor';
 import { CurrentUser } from '../@decorators/current-user.decorator';
-import { AdminGuard } from '../auth/admin.guard';
+import { AdminOnly } from '../auth/admin-only.decorator';
 import { AdminAuthService, type AdminPrincipal } from './admin-auth.service';
 import { paginated } from '../common/http/api-response.factory';
 
@@ -71,7 +70,7 @@ const list = (schema: z.ZodType) =>
 })
 @ApiTags('Administrator access')
 @ApiBearerAuth()
-@UseGuards(AdminGuard)
+@AdminOnly()
 @Controller('admin')
 export class AdminAccessController {
   constructor(private readonly auth: AdminAuthService) {}

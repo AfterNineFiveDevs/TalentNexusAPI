@@ -1,5 +1,6 @@
 import {
   ExecutionContext,
+  ForbiddenException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -7,6 +8,11 @@ import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 import { API_ERROR_MESSAGES } from '@talent-nexus/contracts';
 import { IS_PUBLIC_KEY } from 'src/@decorators/public.decorator';
+import {
+  ADMIN_AUDIENCE,
+  ADMIN_ROUTE_KEY,
+  PRODUCT_AUDIENCE,
+} from './access-token';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
@@ -31,11 +37,25 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     info: unknown,
     context: ExecutionContext,
   ): TUser {
+    if (error instanceof UnauthorizedException) throw error;
     if (error || !user) {
       throw new UnauthorizedException(getAuthenticationErrorMessage(info));
     }
 
-    return super.handleRequest(error, user, info, context);
+    const adminRoute = this.reflector.getAllAndOverride<boolean>(
+      ADMIN_ROUTE_KEY,
+      [context.getHandler(), context.getClass()],
+    );
+    const audience = adminRoute ? ADMIN_AUDIENCE : PRODUCT_AUDIENCE;
+    if (
+      typeof user !== 'object' ||
+      !('tokenAudience' in user) ||
+      user.tokenAudience !== audience
+    ) {
+      throw new ForbiddenException(API_ERROR_MESSAGES.FORBIDDEN);
+    }
+
+    return user;
   }
 }
 
